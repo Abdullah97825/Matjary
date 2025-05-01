@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- When we modify our prisma schema, we can run the following command to update the database and prisma client:
+npx prisma db push
+
+- Other than the command above, we do not need to run other commands to update database and prisma client

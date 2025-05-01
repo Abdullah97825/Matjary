@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- All our new Zod schemas should go in the /schemas folder
+- All services should go in the /services folder
+- All utils should be in the /utils fodler
+
+- Always maintain consistency with our project implementation (you can check our implementaion to see similarities before implementing a new feature)
+
+- For example, if you need a date time picker, first check how we implemented similar thing in other pages/components
+
+- Same goes for api, services, utils, lib, types, and etc

@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matjary API Documentation</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --text: #111827;
+            --text-light: #6b7280;
+            --background: #f9fafb;
+            --border: #e5e7eb;
+            --code-bg: #f3f4f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--background);
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: white;
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            margin-left: 280px;
+            max-width: 850px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        code {
+            font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            color: white;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .get {
+            background-color: #38a169;
+        }
+
+        .post {
+            background-color: #3182ce;
+        }
+
+        .patch,
+        .put {
+            background-color: #d69e2e;
+        }
+
+        .delete {
+            background-color: #e53e3e;
+        }
+
+        .endpoint {
+            background-color: var(--code-bg);
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .params,
+        .response {
+            margin-bottom: 1.5rem;
+        }
+
+        .params h4,
+        .response h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.25rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .status-200,
+        .status-201 {
+            background-color: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-400,
+        .status-401,
+        .status-403,
+        .status-404 {
+            background-color: #fed7d7;
+            color: #822727;
+        }
+
+        .status-500 {
+            background-color: #e9d8fd;
+            color: #44337a;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-section {
+            margin-bottom: 1rem;
+        }
+
+        .nav-section-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-indent {
+            margin-left: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        th,
+        td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--code-bg);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>API Docs</h1>
+
+            <div class="nav-section">
+                <div class="nav-section-title">General</div>
+                <a href="#overview" class="nav-link">Overview</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Authentication</div>
+                <a href="#authentication" class="nav-link">Introduction</a>
+                <a href="#post-api-auth-login" class="nav-link nav-indent">Login</a>
+                <a href="#post-api-auth-register" class="nav-link nav-indent">Register</a>
+                <a href="#post-api-auth-logout" class="nav-link nav-indent">Logout</a>
+                <a href="#mobile-authentication" class="nav-link">Mobile Authentication</a>
+                <a href="#post-api-auth-tokens" class="nav-link nav-indent">Create Token</a>
+                <a href="#get-api-auth-tokens-list" class="nav-link nav-indent">List Tokens</a>
+                <a href="#delete-api-auth-tokens-id" class="nav-link nav-indent">Revoke Token</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">User</div>
+                <a href="#user-management" class="nav-link">User Management</a>
+                <a href="#get-api-user-profile" class="nav-link nav-indent">Get Profile</a>
+                <a href="#patch-api-user-profile" class="nav-link nav-indent">Update Profile</a>
+                <a href="#patch-api-user-password" class="nav-link nav-indent">Change Password</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Products</div>
+                <a href="#products" class="nav-link">Products</a>
+                <a href="#get-api-products" class="nav-link nav-indent">List Products</a>
+                <a href="#get-api-products-id" class="nav-link nav-indent">Get Product</a>
+                <a href="#get-api-products-id-related" class="nav-link nav-indent">Related Products</a>
+                <a href="#get-api-products-id-reviews" class="nav-link nav-indent">Product Reviews</a>
+                <a href="#get-api-products-id-reviews-stats" class="nav-link nav-indent">Review Stats</a>
+                <a href="#get-api-products-featured" class="nav-link nav-indent">Featured Products</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Categories</div>
+                <a href="#categories" class="nav-link">Categories</a>
+                <a href="#get-api-categories" class="nav-link nav-indent">List Categories</a>
+                <a href="#get-api-categories-id" class="nav-link nav-indent">Get Category</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Banners</div>
+                <a href="#banners" class="nav-link">Banners</a>
+                <a href="#get-api-banners" class="nav-link nav-indent">List Banners</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Cart</div>
+                <a href="#cart" class="nav-link">Cart</a>
+                <a href="#get-api-cart" class="nav-link nav-indent">Get Cart</a>
+                <a href="#delete-api-cart" class="nav-link nav-indent">Delete Cart</a>
+                <a href="#post-api-cart-items" class="nav-link nav-indent">Add Item</a>
+                <a href="#patch-api-cart-items-id" class="nav-link nav-indent">Update Item</a>
+                <a href="#delete-api-cart-items-id" class="nav-link nav-indent">Remove Item</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Orders</div>
+                <a href="#orders" class="nav-link">Orders</a>
+                <a href="#get-api-orders" class="nav-link nav-indent">List Orders</a>
+                <a href="#get-api-orders-id" class="nav-link nav-indent">Get Order Details</a>
+                <a href="#post-api-orders" class="nav-link nav-indent">Create Order</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Admin</div>
+                <a href="#admin-apis" class="nav-link">Admin APIs</a>
+                <a href="#admin-products" class="nav-link nav-indent">Products</a>
+                <a href="#admin-categories" class="nav-link nav-indent">Categories</a>
+                <a href="#admin-banners" class="nav-link nav-indent">Banners</a>
+                <a href="#admin-orders" class="nav-link nav-indent">Orders</a>
+                <a href="#admin-customers" class="nav-link nav-indent">Customers</a>
+                <a href="#admin-dashboard" class="nav-link nav-indent">Dashboard</a>
+                <a href="#admin-branches" class="nav-link nav-indent">Branches</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Addresses</div>
+                <a href="#addresses" class="nav-link">Addresses</a>
+                <a href="#get-api-addresses" class="nav-link nav-indent">List Addresses</a>
+                <a href="#post-api-addresses" class="nav-link nav-indent">Create Address</a>
+                <a href="#patch-api-addresses-id" class="nav-link nav-indent">Update Address</a>
+                <a href="#delete-api-addresses-id" class="nav-link nav-indent">Delete Address</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Other</div>
+                <a href="#reviews" class="nav-link">Reviews</a>
+                <a href="#file-handling" class="nav-link">File Handling</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <h1 id="overview">Matjary API Documentation</h1>
+
+            <h2>Overview</h2>
+            <p>This document provides comprehensive documentation for all API endpoints available in the Matjary
+                e-commerce platform.</p>
+
+            <h2 id="authentication">Authentication</h2>
+            <p>Matjary uses a unified authentication system that supports both web and mobile clients:</p>
+
+            <ol>
+                <li><strong>Cookie-based Authentication</strong> (Web): Sessions are managed through cookies for web
+                    clients.</li>
+                <li><strong>Token-based Authentication</strong> (Mobile): Bearer tokens are used for mobile
+                    applications.</li>
+            </ol>
+
+            <p>All authenticated API endpoints support both methods automatically - the system first checks for a valid
+                Bearer token, then falls back to cookie session if no token is found.</p>
+
+            <h3>Web Authentication (Cookie-based)</h3>
+
+            <h3 id="post-api-auth-login">POST /api/auth/login</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/auth/login</code>
+                <p>Authenticates a user and creates a session with a cookie.</p>
+            </div>
+
+            <div class="params">
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "email": "user@example.com",
+  "password": "password123"
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "message": "Logged in successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data</li>
+                    <li><span class="status status-401">401</span> Invalid credentials</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="post-api-auth-register">POST /api/auth/register</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/auth/register</code>
+                <p>Registers a new user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "name": "User Name",
+  "email": "user@example.com",
+  "phone": "1234567890",
+  "address": {
+    "country": "Country Name",
+    "province": "Province Name",
+    "city": "City Name",
+    "neighbourhood": "Neighbourhood Name",
+    "nearestLandmark": "Nearest Landmark",
+    "zipcode": "12345",
+    "isDefault": true
+  },
+  "password": "password123",
+  "passwordConfirmation": "password123"
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "message": "User registered successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-201">201</span> Created</li>
+                    <li><span class="status status-400">400</span> Invalid request data</li>
+                    <li><span class="status status-409">409</span> Email already exists</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="post-api-auth-logout">POST /api/auth/logout</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/auth/logout</code>
+                <p>Logs out the current user by removing the session.</p>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "message": "Logged out successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3>Mobile Authentication (Token-based)</h3>
+            <p>Token-based authentication endpoints for mobile applications.</p>
+
+            <h3 id="post-api-auth-tokens">POST /api/auth/tokens</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/auth/tokens</code>
+                <p>Creates a new personal access token for mobile authentication.</p>
+            </div>
+
+            <div class="params">
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "email": "user@example.com",
+  "password": "password123",
+  "deviceName": "iPhone 13"
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "token": "your-access-token",
+  "expires_at": "2023-05-28T12:00:00.000Z",
+  "user": {
+    "id": "user-id",
+    "name": "User Name",
+    "email": "user@example.com",
+    "role": "CUSTOMER"
+  }
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data</li>
+                    <li><span class="status status-401">401</span> Invalid credentials</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-auth-tokens-list">GET /api/auth/tokens/list</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/auth/tokens/list</code>
+                <p>Lists all personal access tokens for the authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>[
+  {
+    "id": "token-id",
+    "name": "iPhone 13",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "lastUsedAt": "2023-01-02T00:00:00.000Z",
+    "expiresAt": "2023-04-01T00:00:00.000Z"
+  }
+]</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="delete-api-auth-tokens-id">DELETE /api/auth/tokens/[id]</h3>
+            <div class="endpoint">
+                <span class="method delete">DELETE</span> <code>/api/auth/tokens/[id]</code>
+                <p>Revokes a specific personal access token.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: The ID of the token to revoke</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "message": "Token revoked successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-404">404</span> Token not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="user-management">User Management</h2>
+
+            <h3 id="get-api-user-profile">GET /api/user/profile</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/user/profile</code>
+                <p>Gets the profile of the currently authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "id": "user-id",
+  "name": "User Name",
+  "email": "user@example.com",
+  "phone": "1234567890",
+  "role": "CUSTOMER",
+  "addresses": [
+    {
+      "id": "address-id",
+      "userId": "user-id",
+      "country": "Country",
+      "province": "Province",
+      "city": "City",
+      "neighbourhood": "Neighbourhood",
+      "nearestLandmark": "Landmark",
+      "zipcode": "12345",
+      "isDefault": true,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ]
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="patch-api-user-profile">PATCH /api/user/profile</h3>
+            <div class="endpoint">
+                <span class="method patch">PATCH</span> <code>/api/user/profile</code>
+                <p>Updates the profile of the currently authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "name": "New Name",
+  "email": "newemail@example.com",
+  "phone": "0987654321"
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "id": "user-id",
+  "name": "New Name",
+  "email": "newemail@example.com",
+  "phone": "0987654321",
+  "role": "CUSTOMER",
+  "addresses": [
+    {
+      "id": "address-id",
+      "userId": "user-id",
+      "country": "Country",
+      "province": "Province",
+      "city": "City",
+      "neighbourhood": "Neighbourhood",
+      "nearestLandmark": "Landmark",
+      "zipcode": "12345",
+      "isDefault": true,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ]
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="patch-api-user-password">PATCH /api/user/password</h3>
+            <div class="endpoint">
+                <span class="method patch">PATCH</span> <code>/api/user/password</code>
+                <p>Updates the password of the currently authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "currentPassword": "old-password",
+  "password": "new-password"
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "message": "Password updated successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data</li>
+                    <li><span class="status status-401">401</span> Unauthorized or incorrect current password</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="products">Products</h2>
+
+            <h3 id="get-api-products">GET /api/products</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/products</code>
+                <p>Gets a list of all products.</p>
+            </div>
+
+            <div class="params">
+                <h4>Query Parameters:</h4>
+                <ul>
+                    <li><code>page</code>: Page number (default: 1)</li>
+                    <li><code>per_page</code>: Items per page (default: 12)</li>
+                    <li><code>category</code>: Filter by category ID</li>
+                    <li><code>search</code>: Search term to filter products (searches in name and description fields)
+                    </li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "products": [
+    {
+      "id": "product-id",
+      "name": "Product Name",
+      "description": "Product Description",
+      "price": "99.99",
+      "stock": 10,
+      "category": { 
+        "id": "category-id", 
+        "name": "Category Name",
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z"
+      },
+      "images": [{ "id": "image-id", "url": "image-url" }],
+      "thumbnail": { "id": "image-id", "url": "image-url" },
+      "avgRating": 4.5,
+      "totalReviews": 10,
+      "discountAmount": null,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 12,
+    "total": 100,
+    "last_page": 9
+  }
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid query parameters</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-products-id">GET /api/products/[id]</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/products/[id]</code>
+                <p>Gets a single product by ID.</p>
+            </div>
+
+            <div class="params">
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Product ID</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "id": "product-id",
+  "name": "Product Name",
+  "description": "Product Description",
+  "price": "99.99",
+  "stock": 10,
+  "category": { 
+    "id": "category-id", 
+    "name": "Category Name",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  },
+  "images": [
+    { 
+      "id": "image-id", 
+      "url": "image-url",
+      "isThumbnail": true
+    }
+  ],
+  "thumbnail": { "id": "image-id", "url": "image-url" },
+  "attachments": [
+    { 
+      "id": "attachment-id", 
+      "name": "Attachment Name", 
+      "url": "attachment-url" 
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag-id",
+      "name": "Tag Name",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "avgRating": 4.5,
+  "totalReviews": 10,
+  "reviews": [
+    {
+      "id": "review-id",
+      "rating": 5,
+      "title": "Great Product",
+      "content": "Very satisfied with this product",
+      "user": { 
+        "id": "user-id", 
+        "name": "User Name",
+        "image": "user-image-url"
+      },
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "discountType": "AMOUNT",
+  "discountAmount": "20.00",
+  "discountPercent": null,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-404">404</span> Product not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-products-id-related">GET /api/products/[id]/related</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/products/[id]/related</code>
+                <p>Gets related products based on category and tags.</p>
+            </div>
+
+            <div class="params">
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Product ID</li>
+                </ul>
+
+                <h4>Query Parameters:</h4>
+                <ul>
+                    <li><code>limit</code>: Maximum number of related products to return (default: 10)</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>[
+  {
+    "id": "product-id",
+    "name": "Related Product",
+    "price": "99.99",
+    "stock": 10,
+    "avgRating": 4.5,
+    "totalReviews": 10,
+    "discountAmount": "20.00",
+    "discountType": "AMOUNT",
+    "discountPercent": null,
+    "thumbnail": { "id": "image-id", "url": "image-url" },
+    "category": { 
+      "id": "category-id", 
+      "name": "Category Name",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    },
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  }
+]</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-404">404</span> Product not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-products-id-reviews">GET /api/products/[id]/reviews</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/products/[id]/reviews</code>
+                <p>Gets reviews for a specific product.</p>
+            </div>
+
+            <div class="params">
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Product ID</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>[
+  {
+    "id": "review-id",
+    "rating": 5,
+    "title": "Great Product",
+    "content": "Very satisfied with this product",
+    "user": { 
+      "name": "User Name",
+      "image": "user-image-url"
+    },
+    "createdAt": "2023-01-01T00:00:00.000Z"
+  }
+]</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-404">404</span> Product not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-products-id-reviews-stats">GET /api/products/[id]/reviews/stats</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/products/[id]/reviews/stats</code>
+                <p>Gets review statistics for a specific product.</p>
+            </div>
+
+            <div class="params">
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Product ID</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "avgRating": 4.5,
+  "totalReviews": 10,
+  "ratingDistribution": {
+    "5": 6,
+    "4": 3,
+    "3": 1,
+    "2": 0,
+    "1": 0
+  }
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-404">404</span> Product not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-products-featured">GET /api/products/featured</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/products/featured</code>
+                <p>Gets a list of featured products.</p>
+            </div>
+
+            <div class="params">
+                <h4>Query Parameters:</h4>
+                <ul>
+                    <li><code>limit</code>: Maximum number of featured products to return (default: 10)</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>[
+  {
+    "id": "product-id",
+    "name": "Featured Product",
+    "description": "Product Description",
+    "price": 99.99,
+    "stock": 10,
+    "category": { 
+      "id": "category-id", 
+      "name": "Category Name",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    },
+    "thumbnail": { "id": "image-id", "url": "image-url" },
+    "images": [{ "id": "image-id", "url": "image-url" }],
+    "avgRating": 4.5,
+    "totalReviews": 10,
+    "discountAmount": 20,
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  }
+]</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="categories">Categories</h2>
+
+            <h3 id="get-api-categories">GET /api/categories</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/categories</code>
+                <p>Gets all active categories.</p>
+            </div>
+
+            <div class="params">
+                <h4>Query Parameters:</h4>
+                <ul>
+                    <li><code>includeInactive</code>: Set to 'true' to include inactive categories (default: false)</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>[
+  {
+    "id": "category-id",
+    "name": "Category Name",
+    "slug": "category-slug",
+    "description": "Category Description",
+    "imageUrl": "image-url",
+    "active": true,
+    "productCount": 10
+  }
+]</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-categories-id">GET /api/categories/[id]</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/categories/[id]</code>
+                <p>Gets a single category by its ID, along with its products.</p>
+            </div>
+
+            <div class="params">
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Category ID</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "id": "category-id",
+  "name": "Category Name",
+  "slug": "category-slug",
+  "description": "Category Description",
+  "imageUrl": "image-url",
+  "productCount": 10,
+  "products": [
+    {
+      "id": "product-id",
+      "name": "Product Name",
+      "description": "Product Description",
+      "price": "99.99",
+      "stock": 10,
+      "images": [
+        {
+          "id": "image-id",
+          "url": "image-url"
+        }
+      ],
+      "avgRating": 4.5,
+      "totalReviews": 10
+    }
+  ]
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-404">404</span> Category not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="banners">Banners</h2>
+
+            <h3 id="get-api-banners">GET /api/banners</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/banners</code>
+                <p>Gets all active promotional banners.</p>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>[
+  {
+    "id": "banner-id",
+    "title": "Banner Title",
+    "imageUrl": "image-url",
+    "link": "https://example.com",
+    "active": true,
+    "order": 1
+  }
+]</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="cart">Cart</h2>
+
+            <h3 id="get-api-cart">GET /api/cart</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/cart</code>
+                <p>Gets the cart of the currently authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 2,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "price": 99.99,
+        "stock": 10,
+        "images": [{ "id": "image-id", "url": "image-url", "productId": "product-id" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url", "productId": "product-id" },
+        "thumbnailId": "thumbnail-id",
+        "discountType": "AMOUNT",
+        "discountAmount": 10.00,
+        "discountPercent": null
+      }
+    }
+  ],
+  "subtotal": 179.98,
+  "message": "Cart retrieved successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="delete-api-cart">DELETE /api/cart</h3>
+            <div class="endpoint">
+                <span class="method delete">DELETE</span> <code>/api/cart</code>
+                <p>Clears all items from the cart.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "items": [],
+  "subtotal": 0,
+  "message": "Cart cleared successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-404">404</span> Cart not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="post-api-cart-items">POST /api/cart/items</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/cart/items</code>
+                <p>Adds an item to the cart.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "productId": "product-id",
+  "quantity": 1
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 1,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "price": 99.99,
+        "stock": 10,
+        "images": [{ "id": "image-id", "url": "image-url", "productId": "product-id" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url", "productId": "product-id" },
+        "thumbnailId": "thumbnail-id",
+        "discountType": "AMOUNT",
+        "discountAmount": 10.00,
+        "discountPercent": null
+      }
+    }
+  ],
+  "subtotal": 89.99,
+  "message": "Item added to cart successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data or insufficient stock</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="patch-api-cart-items-id">PATCH /api/cart/items/[id]</h3>
+            <div class="endpoint">
+                <span class="method patch">PATCH</span> <code>/api/cart/items/[id]</code>
+                <p>Updates the quantity of a cart item.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Cart item ID (accessed via query parameter ?itemId=xxx)</li>
+                </ul>
+
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "quantity": 3
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 3,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "price": 99.99,
+        "stock": 10,
+        "images": [{ "id": "image-id", "url": "image-url", "productId": "product-id" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url", "productId": "product-id" },
+        "thumbnailId": "thumbnail-id",
+        "discountType": "AMOUNT",
+        "discountAmount": 10.00,
+        "discountPercent": null
+      }
+    }
+  ],
+  "subtotal": 269.97,
+  "message": "Cart item updated successfully"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data or insufficient stock</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-404">404</span> Cart item not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="delete-api-cart-items-id">DELETE /api/cart/items/[id]</h3>
+            <div class="endpoint">
+                <span class="method delete">DELETE</span> <code>/api/cart/items/[id]</code>
+                <p>Removes an item from the cart.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Cart item ID (accessed via query parameter ?itemId=xxx)</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "items": [/* remaining cart items */],
+  "subtotal": 89.99,
+  "message": "Item removed from cart"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-404">404</span> Cart item not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="orders">Orders</h2>
+
+            <h3 id="get-api-orders">GET /api/orders</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/orders</code>
+                <p>Gets a list of orders for the authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Query Parameters:</h4>
+                <ul>
+                    <li><code>page</code>: Current page number (default: 1)</li>
+                    <li><code>per_page</code>: Number of orders per page (default: 10)</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "orders": [
+    {
+      "id": "order-id",
+      "status": "PENDING",
+      "recipientName": "Recipient Name",
+      "phone": "1234567890",
+      "shippingAddress": "Shipping Address",
+      "paymentMethod": "CASH",
+      "totalItems": 2,
+      "savings": 20.00,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 10,
+    "total": 25,
+    "last_page": 3
+  }
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="get-api-orders-id">GET /api/orders/[id]</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/orders/[id]</code>
+                <p>Gets detailed information for a specific order.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Order ID</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "id": "order-id",
+  "status": "PENDING",
+  "recipientName": "Recipient Name",
+  "phone": "1234567890",
+  "shippingAddress": "Shipping Address",
+  "paymentMethod": "CASH",
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 2,
+      "price": 99.99,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "images": [{ "id": "image-id", "url": "image-url" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url" }
+      }
+    }
+  ],
+  "totalPrice": 199.98,
+  "savings": 20.00,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-404">404</span> Order not found</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="post-api-orders">POST /api/orders</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/orders</code>
+                <p>Creates a new order.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "addressId": "address-id",
+  "paymentMethod": "CASH"
+}</code></pre>
+
+                <p>Or with a new address:</p>
+
+                <pre><code>{
+  "newAddress": {
+    "country": "Country",
+    "province": "Province",
+    "city": "City",
+    "neighbourhood": "Neighbourhood",
+    "nearestLandmark": "Landmark",
+    "zipcode": "12345"
+  },
+  "saveAddress": true,
+  "paymentMethod": "CASH"
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "orderId": "order-id"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data or empty cart</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="reviews">Reviews</h2>
+
+            <h3 id="get-api-reviews">GET /api/reviews</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/reviews</code>
+                <p>Gets reviews for a product.</p>
+            </div>
+
+            <h3 id="post-api-reviews">POST /api/reviews</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/reviews</code>
+                <p>Creates a new review for a product.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+            </div>
+
+            <h2 id="addresses">Addresses</h2>
+
+            <h3 id="get-api-addresses">GET /api/addresses</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/addresses</code>
+                <p>Gets all addresses for the authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>[
+  {
+    "id": "address-id",
+    "userId": "user-id",
+    "country": "Country",
+    "province": "Province",
+    "city": "City",
+    "neighbourhood": "Neighbourhood",
+    "nearestLandmark": "Landmark",
+    "zipcode": "12345",
+    "isDefault": true,
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  }
+]</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="post-api-addresses">POST /api/addresses</h3>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/addresses</code>
+                <p>Creates a new address for the authenticated user.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "country": "Country",
+  "province": "Province",
+  "city": "City",
+  "neighbourhood": "Neighbourhood",
+  "nearestLandmark": "Landmark",
+  "zipcode": "12345",
+  "isDefault": false
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "id": "address-id",
+  "userId": "user-id",
+  "country": "Country",
+  "province": "Province",
+  "city": "City",
+  "neighbourhood": "Neighbourhood",
+  "nearestLandmark": "Landmark",
+  "zipcode": "12345",
+  "isDefault": false,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="patch-api-addresses-id">PATCH /api/addresses/[id]</h3>
+            <div class="endpoint">
+                <span class="method patch">PATCH</span> <code>/api/addresses/[id]</code>
+                <p>Updates an existing address.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Address ID</li>
+                </ul>
+
+                <h4>Request Body:</h4>
+                <pre><code>{
+  "city": "New City",
+  "isDefault": true
+}</code></pre>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <pre><code>{
+  "id": "address-id",
+  "userId": "user-id",
+  "country": "Country",
+  "province": "Province",
+  "city": "New City",
+  "neighbourhood": "Neighbourhood",
+  "nearestLandmark": "Landmark",
+  "zipcode": "12345",
+  "isDefault": true,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}</code></pre>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-200">200</span> Success</li>
+                    <li><span class="status status-400">400</span> Invalid request data</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-404">404</span> Address not found or does not belong to user</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h3 id="delete-api-addresses-id">DELETE /api/addresses/[id]</h3>
+            <div class="endpoint">
+                <span class="method delete">DELETE</span> <code>/api/addresses/[id]</code>
+                <p>Deletes an address.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based)</p>
+
+                <h4>Path Parameters:</h4>
+                <ul>
+                    <li><code>id</code>: Address ID</li>
+                </ul>
+            </div>
+
+            <div class="response">
+                <h4>Response:</h4>
+                <p>No content</p>
+            </div>
+
+            <div class="status-codes">
+                <h4>Status Codes:</h4>
+                <ul>
+                    <li><span class="status status-204">204</span> No Content</li>
+                    <li><span class="status status-401">401</span> Unauthorized</li>
+                    <li><span class="status status-404">404</span> Address not found or does not belong to user</li>
+                    <li><span class="status status-500">500</span> Server error</li>
+                </ul>
+            </div>
+
+            <h2 id="admin-apis">Admin APIs</h2>
+            <p>The following APIs are only accessible to users with the ADMIN role.</p>
+
+            <h3 id="admin-products">Products Management</h3>
+
+            <h4 id="get-api-admin-products">GET /api/admin/products</h4>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/admin/products</code>
+                <p>Gets all products (admin view).</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h4 id="post-api-admin-products">POST /api/admin/products</h4>
+            <div class="endpoint">
+                <span class="method post">POST</span> <code>/api/admin/products</code>
+                <p>Creates a new product.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h3 id="admin-categories">Categories Management</h3>
+
+            <h4 id="get-api-admin-categories">GET /api/admin/categories</h4>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/admin/categories</code>
+                <p>Gets all categories.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h3 id="admin-banners">Banners Management</h3>
+
+            <h4 id="get-api-admin-banners">GET /api/admin/banners</h4>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/admin/banners</code>
+                <p>Gets all promotional banners.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h3 id="admin-orders">Orders Management</h3>
+
+            <h4 id="get-api-admin-orders">GET /api/admin/orders</h4>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/admin/orders</code>
+                <p>Gets all orders (admin view).</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h3 id="admin-customers">Customers Management</h3>
+
+            <h4 id="get-api-admin-customers">GET /api/admin/customers</h4>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/admin/customers</code>
+                <p>Gets all customers.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h3 id="admin-dashboard">Dashboard</h3>
+
+            <h4 id="get-api-admin-dashboard">GET /api/admin/dashboard</h4>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/admin/dashboard</code>
+                <p>Gets dashboard statistics.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h3 id="admin-branches">Branches Management</h3>
+
+            <h4 id="get-api-admin-branches">GET /api/admin/branches</h4>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/admin/branches</code>
+                <p>Gets all branches.</p>
+            </div>
+
+            <div class="params">
+                <h4>Authentication Required:</h4>
+                <p>Yes (Cookie-based or Token-based, Admin role)</p>
+            </div>
+
+            <h2 id="file-handling">File Handling</h2>
+
+            <h3 id="get-api-uploads-path">GET /api/uploads/[...path]</h3>
+            <div class="endpoint">
+                <span class="method get">GET</span> <code>/api/uploads/[...path]</code>
+                <p>Serves an uploaded file.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

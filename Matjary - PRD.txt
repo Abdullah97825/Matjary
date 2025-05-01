@@ -1,0 +1,42 @@
+﻿Order status and their transitions:
+* Pending: this status occurs when the customer submits an order that has no special pricing items (hidden or negotiable price). This is how actors can update the status:
+
+
+1. Admin:
+   1. Can reject the order (new status: rejected)
+   2. Can accept the order (new status: accepted)
+   3. Can edit the order items and send the quote back to customer (new status: customer_pending)
+
+
+2. Customer: cannot do anything and can simply wait for new status
+
+
+* Admin_pending: this status occurs when the customer requests details on an order that has items with special pricing (hidden or negotiable price)
+1. Admin:
+   1. Can reject the order (new status: rejected)
+   2. Can edit the order items and send the quote back to customer (new status: customer_pending)
+
+
+2. Customer: cannot do anything and can simply wait for new status
+
+
+* Customer_pending: this status occurs when the admin sends a quote on an order back to the customer
+1. Admin:
+   1. Can reject the order (new status: rejected)
+
+
+2. Customer:
+   1. Can reject the order (new status: rejected)
+   2. Can accept the order (new status: pending)
+   3. Can add items, edit quantity, remove items, and change address and then submit (new status: admin_pending if newly added items have special pricing, pending if no new special pricing items are added)
+
+
+* Accepted: this status occurs when the admin accepts a pending or admin_pending order
+1. Admin:
+   1. Can cancel the order (new status: cancelled)
+
+
+2. Customer: cannot do anything
+
+
+* Completed: neither admin nor customer can edit or do anything to the order

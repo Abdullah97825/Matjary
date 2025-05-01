@@ -1,0 +1,1658 @@
+# Matjary API Documentation
+
+## Overview
+This document provides documentation for all API endpoints available in the Matjary e-commerce platform.
+
+## Authentication
+
+Matjary uses a unified authentication system that supports both web and mobile clients:
+
+1. **Cookie-based Authentication** (Web): Sessions are managed through cookies for web clients.
+2. **Token-based Authentication** (Mobile): Bearer tokens are used for mobile applications.
+
+All authenticated API endpoints support both methods automatically - the system first checks for a valid Bearer token, then falls back to cookie session if no token is found.
+
+### Web Authentication (Cookie-based)
+
+### POST /api/auth/login
+Authenticates a user and creates a session with a cookie.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Logged in successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data
+- 401: Invalid credentials
+- 500: Server error
+
+### POST /api/auth/register
+Registers a new user.
+
+**Request Body:**
+```json
+{
+  "name": "User Name",
+  "email": "user@example.com",
+  "phone": "1234567890",
+  "address": {
+    "country": "Country Name",
+    "province": "Province Name",
+    "city": "City Name",
+    "neighbourhood": "Neighbourhood Name",
+    "nearestLandmark": "Nearest Landmark",
+    "zipcode": "12345",
+    "isDefault": true
+  },
+  "password": "password123",
+  "passwordConfirmation": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "User registered successfully"
+}
+```
+
+**Status Codes:**
+- 201: Created
+- 400: Invalid request data
+- 409: Email already exists
+- 500: Server error
+
+### POST /api/auth/logout
+Logs out the current user by removing the session.
+
+**Response:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 500: Server error
+
+### Mobile Authentication (Token-based)
+
+#### POST /api/auth/tokens
+Creates a new personal access token for mobile authentication.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "deviceName": "iPhone 13"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "your-access-token",
+  "expires_at": "2023-05-28T12:00:00.000Z",
+  "user": {
+    "id": "user-id",
+    "name": "User Name",
+    "email": "user@example.com",
+    "role": "CUSTOMER"
+  }
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data
+- 401: Invalid credentials
+- 500: Server error
+
+#### GET /api/auth/tokens/list
+Lists all personal access tokens for the authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Response:**
+```json
+[
+  {
+    "id": "token-id",
+    "name": "iPhone 13",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "lastUsedAt": "2023-01-02T00:00:00.000Z",
+    "expiresAt": "2023-04-01T00:00:00.000Z"
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 500: Server error
+
+#### DELETE /api/auth/tokens/[id]
+Revokes a specific personal access token.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Path Parameters:**
+- id: The ID of the token to revoke
+
+**Response:**
+```json
+{
+  "message": "Token revoked successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 404: Token not found
+- 500: Server error
+
+## User Management
+
+### GET /api/user/profile
+Gets the profile of the currently authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Response:**
+```json
+{
+  "id": "user-id",
+  "name": "User Name",
+  "email": "user@example.com",
+  "phone": "1234567890",
+  "role": "CUSTOMER",
+  "addresses": [
+    {
+      "id": "address-id",
+      "userId": "user-id",
+      "country": "Country",
+      "province": "Province",
+      "city": "City",
+      "neighbourhood": "Neighbourhood",
+      "nearestLandmark": "Landmark",
+      "zipcode": "12345",
+      "isDefault": true,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 500: Server error
+
+### PATCH /api/user/profile
+Updates the profile of the currently authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Request Body:**
+```json
+{
+  "name": "New Name",
+  "email": "newemail@example.com",
+  "phone": "0987654321"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "user-id",
+  "name": "New Name",
+  "email": "newemail@example.com",
+  "phone": "0987654321",
+  "role": "CUSTOMER",
+  "addresses": [
+    {
+      "id": "address-id",
+      "userId": "user-id",
+      "country": "Country",
+      "province": "Province",
+      "city": "City",
+      "neighbourhood": "Neighbourhood",
+      "nearestLandmark": "Landmark",
+      "zipcode": "12345",
+      "isDefault": true,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data
+- 401: Unauthorized
+- 500: Server error
+
+### PATCH /api/user/password
+Updates the password of the currently authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Request Body:**
+```json
+{
+  "currentPassword": "old-password",
+  "password": "new-password"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Password updated successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data
+- 401: Unauthorized or incorrect current password
+- 500: Server error
+
+## Products
+
+### GET /api/products
+Gets a list of all products.
+
+**Query Parameters:**
+- page: Page number (default: 1)
+- per_page: Items per page (default: 12)
+- category: Filter by category ID
+- search: Search term to filter products (searches in name and description fields)
+
+**Response:**
+```json
+{
+  "products": [
+    {
+      "id": "product-id",
+      "name": "Product Name",
+      "description": "Product Description",
+      "price": "99.99",
+      "stock": 10,
+      "category": { 
+        "id": "category-id", 
+        "name": "Category Name",
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z"
+      },
+      "images": [{ "id": "image-id", "url": "image-url" }],
+      "thumbnail": { "id": "image-id", "url": "image-url" },
+      "avgRating": 4.5,
+      "totalReviews": 10,
+      "discountAmount": null,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 12,
+    "total": 100,
+    "last_page": 9
+  }
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid query parameters
+- 500: Server error
+
+### GET /api/products/[id]
+Gets a single product by ID.
+
+**Path Parameters:**
+- id: Product ID
+
+**Response:**
+```json
+{
+  "id": "product-id",
+  "name": "Product Name",
+  "description": "Product Description",
+  "price": "99.99",
+  "stock": 10,
+  "category": { 
+    "id": "category-id", 
+    "name": "Category Name",
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  },
+  "images": [
+    { 
+      "id": "image-id", 
+      "url": "image-url",
+      "isThumbnail": true
+    }
+  ],
+  "thumbnail": { "id": "image-id", "url": "image-url" },
+  "attachments": [
+    { 
+      "id": "attachment-id", 
+      "name": "Attachment Name", 
+      "url": "attachment-url" 
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag-id",
+      "name": "Tag Name",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "avgRating": 4.5,
+  "totalReviews": 10,
+  "reviews": [
+    {
+      "id": "review-id",
+      "rating": 5,
+      "title": "Great Product",
+      "content": "Very satisfied with this product",
+      "user": { 
+        "id": "user-id", 
+        "name": "User Name",
+        "image": "user-image-url"
+      },
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "discountType": "AMOUNT",
+  "discountAmount": "20.00",
+  "discountPercent": null,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 404: Product not found
+- 500: Server error
+
+### GET /api/products/featured
+Gets a list of featured products.
+
+**Query Parameters:**
+- limit: Maximum number of featured products to return (default: 10)
+
+**Response:**
+```json
+[
+  {
+    "id": "product-id",
+    "name": "Featured Product",
+    "description": "Product Description",
+    "price": 99.99,
+    "stock": 10,
+    "category": { 
+      "id": "category-id", 
+      "name": "Category Name",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    },
+    "thumbnail": { "id": "image-id", "url": "image-url" },
+    "images": [{ "id": "image-id", "url": "image-url" }],
+    "avgRating": 4.5,
+    "totalReviews": 10,
+    "discountAmount": 20,
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 500: Server error
+
+### GET /api/products/[id]/related
+Gets related products based on category and tags.
+
+**Path Parameters:**
+- id: Product ID
+
+**Query Parameters:**
+- limit: Maximum number of related products to return (default: 10)
+
+**Response:**
+```json
+[
+  {
+    "id": "product-id",
+    "name": "Related Product",
+    "price": "99.99",
+    "stock": 10,
+    "avgRating": 4.5,
+    "totalReviews": 10,
+    "discountAmount": "20.00",
+    "discountType": "AMOUNT",
+    "discountPercent": null,
+    "thumbnail": { "id": "image-id", "url": "image-url" },
+    "category": { 
+      "id": "category-id", 
+      "name": "Category Name",
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    },
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 404: Product not found
+- 500: Server error
+
+### GET /api/products/[id]/reviews
+Gets reviews for a specific product.
+
+**Path Parameters:**
+- id: Product ID
+
+**Response:**
+```json
+[
+  {
+    "id": "review-id",
+    "rating": 5,
+    "title": "Great Product",
+    "content": "Very satisfied with this product",
+    "user": { 
+      "name": "User Name",
+      "image": "user-image-url"
+    },
+    "createdAt": "2023-01-01T00:00:00.000Z"
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 404: Product not found
+- 500: Server error
+
+### GET /api/products/[id]/reviews/stats
+Gets review statistics for a specific product.
+
+**Path Parameters:**
+- id: Product ID
+
+**Response:**
+```json
+{
+  "avgRating": 4.5,
+  "totalReviews": 10,
+  "ratingDistribution": {
+    "5": 6,
+    "4": 3,
+    "3": 1,
+    "2": 0,
+    "1": 0
+  }
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 404: Product not found
+- 500: Server error
+
+## Categories
+
+### GET /api/categories
+Gets all active categories.
+
+**Query Parameters:**
+- includeInactive: Set to 'true' to include inactive categories (default: false)
+
+**Response:**
+```json
+[
+  {
+    "id": "category-id",
+    "name": "Category Name",
+    "slug": "category-slug",
+    "description": "Category Description",
+    "imageUrl": "image-url",
+    "active": true,
+    "productCount": 10
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 500: Server error
+
+### GET /api/categories/[id]
+Gets a single category by its ID, along with its products.
+
+**Path Parameters:**
+- id: Category ID
+
+**Response:**
+```json
+{
+  "id": "category-id",
+  "name": "Category Name",
+  "slug": "category-slug",
+  "description": "Category Description",
+  "imageUrl": "image-url",
+  "productCount": 10,
+  "products": [
+    {
+      "id": "product-id",
+      "name": "Product Name",
+      "description": "Product Description",
+      "price": "99.99",
+      "stock": 10,
+      "images": [
+        {
+          "id": "image-id",
+          "url": "image-url"
+        }
+      ],
+      "avgRating": 4.5,
+      "totalReviews": 10
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 404: Category not found
+- 500: Server error
+
+## Banners
+
+### GET /api/banners
+Gets all active promotional banners.
+
+**Response:**
+```json
+[
+  {
+    "id": "banner-id",
+    "title": "Banner Title",
+    "imageUrl": "image-url",
+    "link": "https://example.com",
+    "active": true,
+    "order": 1
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 500: Server error
+
+## Cart
+
+### GET /api/cart
+Gets the cart of the currently authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Response:**
+```json
+{
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 2,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "price": 99.99,
+        "stock": 10,
+        "images": [{ "id": "image-id", "url": "image-url", "productId": "product-id" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url", "productId": "product-id" },
+        "thumbnailId": "thumbnail-id",
+        "discountType": "AMOUNT",
+        "discountAmount": 10.00,
+        "discountPercent": null
+      }
+    }
+  ],
+  "subtotal": 179.98,
+  "message": "Cart retrieved successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 500: Server error
+
+### DELETE /api/cart
+Clears all items from the cart.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Response:**
+```json
+{
+  "items": [],
+  "subtotal": 0,
+  "message": "Cart cleared successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 404: Cart not found
+- 500: Server error
+
+### POST /api/cart/items
+Adds an item to the cart.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Request Body:**
+```json
+{
+  "productId": "product-id",
+  "quantity": 1
+}
+```
+
+**Response:**
+```json
+{
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 1,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "price": 99.99,
+        "stock": 10,
+        "images": [{ "id": "image-id", "url": "image-url", "productId": "product-id" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url", "productId": "product-id" },
+        "thumbnailId": "thumbnail-id",
+        "discountType": "AMOUNT",
+        "discountAmount": 10.00,
+        "discountPercent": null
+      }
+    }
+  ],
+  "subtotal": 89.99,
+  "message": "Item added to cart successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data or insufficient stock
+- 401: Unauthorized
+- 500: Server error
+
+### PATCH /api/cart/items/[id]
+Updates the quantity of a cart item.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Path Parameters:**
+- id: Cart item ID (accessed via query parameter ?itemId=xxx)
+
+**Request Body:**
+```json
+{
+  "quantity": 3
+}
+```
+
+**Response:**
+```json
+{
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 3,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "price": 99.99,
+        "stock": 10,
+        "images": [{ "id": "image-id", "url": "image-url", "productId": "product-id" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url", "productId": "product-id" },
+        "thumbnailId": "thumbnail-id",
+        "discountType": "AMOUNT",
+        "discountAmount": 10.00,
+        "discountPercent": null
+      }
+    }
+  ],
+  "subtotal": 269.97,
+  "message": "Cart item updated successfully"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data or insufficient stock
+- 401: Unauthorized
+- 404: Cart item not found
+- 500: Server error
+
+### DELETE /api/cart/items/[id]
+Removes an item from the cart.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Path Parameters:**
+- id: Cart item ID (accessed via query parameter ?itemId=xxx)
+
+**Response:**
+```json
+{
+  "items": [/* remaining cart items */],
+  "subtotal": 89.99,
+  "message": "Item removed from cart"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 404: Cart item not found
+- 500: Server error
+
+## Orders
+
+### GET /api/orders
+Gets a list of orders for the authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Query Parameters:**
+- page: Current page number (default: 1)
+- per_page: Number of orders per page (default: 10)
+
+**Response:**
+```json
+{
+  "orders": [
+    {
+      "id": "order-id",
+      "status": "PENDING",
+      "recipientName": "Recipient Name",
+      "phone": "1234567890",
+      "shippingAddress": "Shipping Address",
+      "paymentMethod": "CASH",
+      "totalItems": 2,
+      "savings": 20.00,
+      "createdAt": "2023-01-01T00:00:00.000Z",
+      "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 10,
+    "total": 25,
+    "last_page": 3
+  }
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 500: Server error
+
+### GET /api/orders/[id]
+Gets detailed information for a specific order.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Path Parameters:**
+- id: Order ID
+
+**Response:**
+```json
+{
+  "id": "order-id",
+  "status": "PENDING",
+  "recipientName": "Recipient Name",
+  "phone": "1234567890",
+  "shippingAddress": "Shipping Address",
+  "paymentMethod": "CASH",
+  "items": [
+    {
+      "id": "item-id",
+      "quantity": 2,
+      "price": 99.99,
+      "product": {
+        "id": "product-id",
+        "name": "Product Name",
+        "images": [{ "id": "image-id", "url": "image-url" }],
+        "thumbnail": { "id": "thumbnail-id", "url": "thumbnail-url" }
+      }
+    }
+  ],
+  "totalPrice": 199.98,
+  "savings": 20.00,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 404: Order not found
+- 500: Server error
+
+### POST /api/orders
+Creates a new order.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Request Body:**
+```json
+{
+  "addressId": "address-id",
+  "paymentMethod": "CASH"
+}
+```
+
+Or with a new address:
+
+```json
+{
+  "newAddress": {
+    "country": "Country",
+    "province": "Province",
+    "city": "City",
+    "neighbourhood": "Neighbourhood",
+    "nearestLandmark": "Landmark",
+    "zipcode": "12345"
+  },
+  "saveAddress": true,
+  "paymentMethod": "CASH"
+}
+```
+
+**Response:**
+```json
+{
+  "orderId": "order-id"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data or empty cart
+- 401: Unauthorized
+- 500: Server error
+
+## Reviews
+
+### GET /api/reviews
+Gets reviews for a product.
+
+**Query Parameters:**
+- productId: Product ID
+
+**Response:**
+```json
+[
+  {
+    "id": "review-id",
+    "rating": 5,
+    "title": "Great Product",
+    "content": "Very satisfied with this product",
+    "user": { "id": "user-id", "name": "User Name" },
+    "createdAt": "2023-01-01T00:00:00.000Z"
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Missing productId
+- 500: Server error
+
+### POST /api/reviews
+Creates a new review for a product.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Request Body:**
+```json
+{
+  "productId": "product-id",
+  "rating": 5,
+  "title": "Great Product",
+  "content": "Very satisfied with this product"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "review-id",
+  "rating": 5,
+  "title": "Great Product",
+  "content": "Very satisfied with this product",
+  "user": { "id": "user-id", "name": "User Name" },
+  "createdAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 201: Created
+- 400: Invalid request data
+- 401: Unauthorized
+- 403: User has not purchased this product or already reviewed it
+- 404: Product not found
+- 500: Server error
+
+## Addresses
+
+### GET /api/addresses
+Gets all addresses for the authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Response:**
+```json
+[
+  {
+    "id": "address-id",
+    "userId": "user-id",
+    "country": "Country",
+    "province": "Province",
+    "city": "City",
+    "neighbourhood": "Neighbourhood",
+    "nearestLandmark": "Landmark",
+    "zipcode": "12345",
+    "isDefault": true,
+    "createdAt": "2023-01-01T00:00:00.000Z",
+    "updatedAt": "2023-01-01T00:00:00.000Z"
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 500: Server error
+
+### POST /api/addresses
+Creates a new address for the authenticated user.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Request Body:**
+```json
+{
+  "country": "Country",
+  "province": "Province",
+  "city": "City",
+  "neighbourhood": "Neighbourhood",
+  "nearestLandmark": "Landmark",
+  "zipcode": "12345",
+  "isDefault": false
+}
+```
+
+**Response:**
+```json
+{
+  "id": "address-id",
+  "userId": "user-id",
+  "country": "Country",
+  "province": "Province",
+  "city": "City",
+  "neighbourhood": "Neighbourhood",
+  "nearestLandmark": "Landmark",
+  "zipcode": "12345",
+  "isDefault": false,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data
+- 401: Unauthorized
+- 500: Server error
+
+### PATCH /api/addresses/[id]
+Updates an existing address.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Path Parameters:**
+- id: Address ID
+
+**Request Body:**
+```json
+{
+  "city": "New City",
+  "isDefault": true
+}
+```
+
+**Response:**
+```json
+{
+  "id": "address-id",
+  "userId": "user-id",
+  "country": "Country",
+  "province": "Province",
+  "city": "New City",
+  "neighbourhood": "Neighbourhood",
+  "nearestLandmark": "Landmark",
+  "zipcode": "12345",
+  "isDefault": true,
+  "createdAt": "2023-01-01T00:00:00.000Z",
+  "updatedAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data
+- 401: Unauthorized
+- 404: Address not found or does not belong to user
+- 500: Server error
+
+### DELETE /api/addresses/[id]
+Deletes an address.
+
+**Authentication Required**: Yes (Cookie-based or Token-based)
+
+**Path Parameters:**
+- id: Address ID
+
+**Response:**
+No content
+
+**Status Codes:**
+- 204: No Content
+- 401: Unauthorized
+- 404: Address not found or does not belong to user
+- 500: Server error
+
+## Admin APIs
+
+### Products Management
+
+#### GET /api/admin/products
+Gets all products (admin view).
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Response:**
+```json
+[
+  {
+    "id": "product-id",
+    "name": "Product Name",
+    "price": "99.99",
+    "stock": 10,
+    "category": { "id": "category-id", "name": "Category Name" },
+    "createdAt": "2023-01-01T00:00:00.000Z"
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+#### POST /api/admin/products
+Creates a new product.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Request Body:**
+```json
+{
+  "name": "New Product",
+  "description": "Product Description",
+  "price": "99.99",
+  "stock": 10,
+  "categoryId": "category-id",
+  "images": ["image-id-1", "image-id-2"],
+  "public": true,
+  "isFeatured": false
+}
+```
+
+**Response:**
+```json
+{
+  "id": "product-id",
+  "name": "New Product",
+  "description": "Product Description",
+  "price": "99.99",
+  "stock": 10,
+  "categoryId": "category-id",
+  "images": [
+    { "id": "image-id-1", "url": "image-url-1" },
+    { "id": "image-id-2", "url": "image-url-2" }
+  ],
+  "public": true,
+  "isFeatured": false,
+  "createdAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 201: Created
+- 400: Invalid request data
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+#### POST /api/admin/products/upload
+Uploads a product image.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Request Body:**
+Form data with:
+- file: Image file
+- productId: (Optional) Product ID to associate the image with
+
+**Response:**
+```json
+{
+  "id": "image-id",
+  "url": "image-url"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid file
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+### Categories Management
+
+#### GET /api/admin/categories
+Gets all categories.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Response:**
+```json
+[
+  {
+    "id": "category-id",
+    "name": "Category Name",
+    "slug": "category-slug",
+    "description": "Category Description",
+    "imageUrl": "image-url",
+    "active": true,
+    "productCount": 10
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+#### POST /api/admin/categories
+Creates a new category.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Request Body:**
+```json
+{
+  "name": "New Category",
+  "description": "Category Description",
+  "imageUrl": "image-url",
+  "active": true
+}
+```
+
+**Response:**
+```json
+{
+  "id": "category-id",
+  "name": "New Category",
+  "slug": "new-category",
+  "description": "Category Description",
+  "imageUrl": "image-url",
+  "active": true,
+  "createdAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 201: Created
+- 400: Invalid request data
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 409: Category name already exists
+- 500: Server error
+
+#### POST /api/admin/categories/upload
+Uploads a category image.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Request Body:**
+Form data with:
+- file: Image file
+
+**Response:**
+```json
+{
+  "url": "image-url"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid file
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+### Banners Management
+
+#### GET /api/admin/banners
+Gets all promotional banners.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Response:**
+```json
+[
+  {
+    "id": "banner-id",
+    "title": "Banner Title",
+    "imageUrl": "image-url",
+    "link": "https://example.com",
+    "active": true,
+    "order": 1
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+#### POST /api/admin/banners
+Creates a new promotional banner.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Request Body:**
+```json
+{
+  "title": "New Banner",
+  "imageUrl": "image-url",
+  "link": "https://example.com",
+  "active": true,
+  "order": 1
+}
+```
+
+**Response:**
+```json
+{
+  "id": "banner-id",
+  "title": "New Banner",
+  "imageUrl": "image-url",
+  "link": "https://example.com",
+  "active": true,
+  "order": 1,
+  "createdAt": "2023-01-01T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 201: Created
+- 400: Invalid request data
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+#### POST /api/admin/banners/upload
+Uploads a banner image.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Request Body:**
+Form data with:
+- file: Image file
+
+**Response:**
+```json
+{
+  "url": "image-url"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid file
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+### Orders Management
+
+#### GET /api/admin/orders
+Gets all orders (admin view).
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Query Parameters:**
+- status: Filter by order status
+- page: Page number
+- limit: Items per page
+
+**Response:**
+```json
+{
+  "orders": [
+    {
+      "id": "order-id",
+      "status": "PENDING",
+      "recipientName": "Recipient Name",
+      "phone": "1234567890",
+      "user": { "id": "user-id", "name": "User Name", "email": "user@example.com" },
+      "totalPrice": "199.98",
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "total": 100,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 10
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid query parameters
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+#### PATCH /api/admin/orders/[id]
+Updates the status of an order.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Path Parameters:**
+- id: Order ID
+
+**Request Body:**
+```json
+{
+  "status": "COMPLETED"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "order-id",
+  "status": "COMPLETED",
+  "updatedAt": "2023-01-02T00:00:00.000Z"
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid request data
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 404: Order not found
+- 500: Server error
+
+### Customers Management
+
+#### GET /api/admin/customers
+Gets all customers.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Query Parameters:**
+- page: Page number
+- limit: Items per page
+- search: Search term
+
+**Response:**
+```json
+{
+  "customers": [
+    {
+      "id": "user-id",
+      "name": "User Name",
+      "email": "user@example.com",
+      "phone": "1234567890",
+      "ordersCount": 5,
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "total": 100,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 10
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 400: Invalid query parameters
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+### Dashboard
+
+#### GET /api/admin/dashboard
+Gets dashboard statistics.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Response:**
+```json
+{
+  "totalSales": "9999.99",
+  "totalOrders": 100,
+  "totalCustomers": 50,
+  "totalProducts": 200,
+  "recentOrders": [
+    {
+      "id": "order-id",
+      "status": "PENDING",
+      "recipientName": "Recipient Name",
+      "totalPrice": "199.98",
+      "createdAt": "2023-01-01T00:00:00.000Z"
+    }
+  ],
+  "topProducts": [
+    {
+      "id": "product-id",
+      "name": "Product Name",
+      "totalOrdered": 20
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+### Branches Management
+
+#### GET /api/admin/branches
+Gets all branches.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Response:**
+```json
+[
+  {
+    "id": "branch-id",
+    "name": "Branch Name",
+    "isMain": true,
+    "address": "Branch Address",
+    "mapEnabled": true,
+    "latitude": 12.34,
+    "longitude": 56.78,
+    "contacts": [
+      {
+        "id": "contact-id",
+        "type": "EMAIL",
+        "value": "branch@example.com",
+        "label": "Customer Support"
+      }
+    ]
+  }
+]
+```
+
+**Status Codes:**
+- 200: Success
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+#### POST /api/admin/branches
+Creates a new branch.
+
+**Authentication Required**: Yes (Cookie-based or Token-based, Admin role)
+
+**Request Body:**
+```json
+{
+  "name": "New Branch",
+  "isMain": false,
+  "address": "Branch Address",
+  "mapEnabled": true,
+  "latitude": 12.34,
+  "longitude": 56.78,
+  "contacts": [
+    {
+      "type": "EMAIL",
+      "value": "branch@example.com",
+      "label": "Customer Support",
+      "isMain": true
+    }
+  ],
+  "businessHours": [
+    {
+      "dayOfWeek": 1,
+      "openTime": "09:00",
+      "closeTime": "17:00",
+      "isClosed": false
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "id": "branch-id",
+  "name": "New Branch",
+  "isMain": false,
+  "address": "Branch Address",
+  "mapEnabled": true,
+  "latitude": 12.34,
+  "longitude": 56.78,
+  "contacts": [
+    {
+      "id": "contact-id",
+      "type": "EMAIL",
+      "value": "branch@example.com",
+      "label": "Customer Support",
+      "isMain": true
+    }
+  ],
+  "businessHours": [
+    {
+      "id": "hours-id",
+      "dayOfWeek": 1,
+      "openTime": "09:00",
+      "closeTime": "17:00",
+      "isClosed": false
+    }
+  ]
+}
+```
+
+**Status Codes:**
+- 201: Created
+- 400: Invalid request data
+- 401: Unauthorized
+- 403: Forbidden (not admin)
+- 500: Server error
+
+## File Handling
+
+### GET /api/uploads/[...path]
+Serves an uploaded file.
+
+**Path Parameters:**
+- path: Path to the file
+
+**Response:**
+The requested file with appropriate content type
+
+**Status Codes:**
+- 200: Success
+- 404: File not found
+- 500: Server error 

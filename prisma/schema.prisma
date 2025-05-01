@@ -1,0 +1,463 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String                @id @default(cuid())
+  email               String                @unique
+  password            String
+  name                String
+  role                Role                  @default(CUSTOMER)
+  phone               String
+  addresses           Address[]
+  sessions            Session[]
+  cart                Cart?
+  orders              Order[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  reviews             Review[]
+  hiddenReviews       Review[]              @relation("HiddenReviews")
+  image               String?
+  PersonalAccessToken PersonalAccessToken[]
+  OrderStatusHistory  OrderStatusHistory[]
+  orderReviews        OrderReview[]
+  promoAssignments    UserPromoCode[]
+  excludedFromPromos  ExcludedUser[]
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expires   DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([token])
+}
+
+model PersonalAccessToken {
+  id         String    @id @default(cuid())
+  token      String    @unique
+  name       String // Device/app name
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Product {
+  id               String              @id @default(cuid())
+  name             String
+  description      String
+  price            Decimal
+  images           ProductImage[]
+  attachments      ProductAttachment[]
+  stock            Int
+  category         Category            @relation(fields: [categoryId], references: [id])
+  categoryId       String
+  brand            Brand?              @relation(fields: [brandId], references: [id])
+  brandId          String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  cartItems        CartItem[]
+  orderItems       OrderItem[]
+  isFeatured       Boolean             @default(false)
+  tags             Tag[]               @relation("ProductTags")
+  reviews          Review[]
+  avgRating        Decimal?            @db.Decimal(2, 1)
+  totalReviews     Int                 @default(0)
+  thumbnailId      String?             @unique
+  thumbnail        ProductImage?       @relation("ProductThumbnail", fields: [thumbnailId], references: [id])
+  discountType     DiscountType?
+  discountAmount   Decimal?            @db.Decimal(10, 2)
+  discountPercent  Int? // Percentage value (0-100)
+  public           Boolean             @default(true)
+  negotiablePrice  Boolean             @default(false)
+  hidePrice        Boolean             @default(false)
+  hideStock        Boolean             @default(false)
+  useStock         Boolean             @default(true)
+  requiresApproval Boolean             @default(false)
+  isArchived       Boolean             @default(false)
+}
+
+model ProductImage {
+  id           String   @id @default(cuid())
+  url          String
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  thumbnailFor Product? @relation("ProductThumbnail")
+}
+
+model ProductAttachment {
+  id        String  @id @default(cuid())
+  name      String
+  url       String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+}
+
+model TemporaryUpload {
+  id        String   @id @default(cuid())
+  url       String   @unique
+  type      String
+  expiresAt DateTime
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  active      Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Brand {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  active      Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String     @unique
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  quantity  Int
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id                  String               @id @default(cuid())
+  status              OrderStatus          @default(PENDING)
+  user                User                 @relation(fields: [userId], references: [id])
+  userId              String
+  recipientName       String
+  phone               String
+  shippingAddress     String
+  items               OrderItem[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  reviews             Review[]
+  paymentMethod       PaymentMethod        @default(CASH)
+  savings             Decimal              @default(0) @db.Decimal(10, 2)
+  statusHistory       OrderStatusHistory[]
+  itemsEdited         Boolean              @default(false)
+  orderReview         OrderReview?
+  adminDiscount       Decimal?             @db.Decimal(10, 2)
+  adminDiscountReason String?              @db.Text
+  promoCode           PromoCode?           @relation(fields: [promoCodeId], references: [id])
+  promoCodeId         String?
+  promoDiscount       Decimal?             @db.Decimal(10, 2)
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  quantity       Int
+  quantityEdited Boolean @default(false)
+  price          Decimal
+  priceEdited    Boolean @default(false)
+  originalValues Json?   @default("{}")
+  adminAdded     Boolean @default(false)
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId        String
+  product        Product @relation(fields: [productId], references: [id])
+  productId      String
+}
+
+enum OrderStatus {
+  PENDING
+  ADMIN_PENDING
+  CUSTOMER_PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+// TODO: Add other payment methods
+enum PaymentMethod {
+  PENDING
+  CASH
+}
+
+model PromotionalBanner {
+  id        String   @id @default(cuid())
+  title     String
+  imageUrl  String
+  link      String? // Optional link for the banner to redirect to
+  active    Boolean  @default(true)
+  order     Int      @default(0) // For controlling display order
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  products  Product[] @relation("ProductTags")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Review {
+  id             String   @id @default(cuid())
+  rating         Int      @db.SmallInt // 1-5
+  title          String?  @db.VarChar(100)
+  content        String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId      String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  orderId        String? // Made optional, just to track which order triggered the review
+  order          Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  isHidden       Boolean  @default(false)
+  hiddenByUserId String?
+  hiddenBy       User?    @relation("HiddenReviews", fields: [hiddenByUserId], references: [id], onDelete: SetNull)
+  hiddenReason   String?  @db.Text
+
+  @@unique([userId, productId]) // Changed to ensure one review per product per user
+  @@index([productId])
+  @@index([userId])
+  @@index([orderId])
+  @@index([hiddenByUserId])
+}
+
+model OrderReview {
+  id        String   @id @default(cuid())
+  rating    Int      @db.SmallInt // 1-5
+  title     String?  @db.VarChar(100)
+  content   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String   @unique // One-to-one relation with Order
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@index([userId])
+}
+
+model Address {
+  id              String   @id @default(cuid())
+  country         String
+  province        String
+  city            String
+  neighbourhood   String
+  nearestLandmark String
+  zipcode         String
+  isDefault       Boolean  @default(false)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+enum DiscountType {
+  NONE
+  FLAT
+  PERCENTAGE
+  BOTH
+}
+
+// Contact Settings Models
+model Branch {
+  id           String  @id @default(cuid())
+  name         String
+  isMain       Boolean @default(false)
+  address      String?
+  mapEnabled   Boolean @default(false)
+  latitude     Float?
+  longitude    Float?
+  mapZoomLevel Int     @default(14)
+
+  // Contact Details
+  contacts ContactDetail[]
+
+  // Business Hours
+  businessHours BusinessHours[]
+
+  // Additional Sections
+  sections BranchSection[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactDetail {
+  id     String      @id @default(cuid())
+  type   ContactType
+  value  String
+  label  String? // e.g., "Sales", "Support", "General Inquiries"
+  isMain Boolean     @default(false)
+  order  Int         @default(0)
+
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ContactType {
+  EMAIL
+  PHONE
+  WHATSAPP
+  FACEBOOK
+  INSTAGRAM
+  TWITTER
+  LINKEDIN
+  OTHER
+}
+
+model BusinessHours {
+  id        String  @id @default(cuid())
+  dayOfWeek Int // 0-6 (Sunday-Saturday)
+  openTime  String? // "09:00"
+  closeTime String? // "17:00"
+  isClosed  Boolean @default(false)
+
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchId String
+}
+
+model BranchSection {
+  id        String  @id @default(cuid())
+  title     String
+  content   String  @db.Text
+  order     Int
+  isEnabled Boolean @default(true)
+
+  branch   Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchId String
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  branchId  String?
+  data      Json
+  status    String   @default("PENDING") // PENDING, RESPONDED, ARCHIVED
+  createdAt DateTime @default(now())
+}
+
+model OrderStatusHistory {
+  id             String      @id @default(cuid())
+  order          Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId        String
+  previousStatus OrderStatus
+  newStatus      OrderStatus
+  note           String?     @db.Text
+  createdBy      User        @relation(fields: [createdById], references: [id])
+  createdById    String
+  createdAt      DateTime    @default(now())
+
+  @@index([orderId])
+  @@index([createdById])
+}
+
+model Settings {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Promo Code Models
+model PromoCode {
+  id              String          @id @default(cuid())
+  code            String          @unique
+  description     String?
+  discountType    DiscountType    @default(NONE)
+  discountAmount  Decimal?        @db.Decimal(10, 2)
+  discountPercent Int?
+  hasExpiryDate   Boolean         @default(true)
+  expiryDate      DateTime?
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  userAssignments UserPromoCode[]
+  excludedUsers   ExcludedUser[]
+  orders          Order[]
+  maxUses         Int? // Null means unlimited
+  usedCount       Int             @default(0)
+  minOrderAmount  Decimal?        @db.Decimal(10, 2) // Minimum order amount required
+}
+
+model UserPromoCode {
+  id            String    @id @default(cuid())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  promoCode     PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  promoCodeId   String
+  isExclusive   Boolean   @default(false) // When true, only this user can use the code
+  hasExpiryDate Boolean   @default(false)
+  expiryDate    DateTime?
+  assignedAt    DateTime  @default(now())
+  usedAt        DateTime?
+
+  @@unique([userId, promoCodeId])
+  @@index([userId])
+  @@index([promoCodeId])
+}
+
+model ExcludedUser {
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  promoCode   PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+  promoCodeId String
+  excludedAt  DateTime  @default(now())
+
+  @@unique([userId, promoCodeId])
+  @@index([userId])
+  @@index([promoCodeId])
+}

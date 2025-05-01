@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgres:17 # Use a specific version for consistency
+    ports:
+      - "5432:5432" # Expose only if needed externally, better to keep internal
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      # - POSTGRES_USER=postgres
+      # - POSTGRES_PASSWORD=password # Replace with a strong password
+      # - POSTGRES_DB=your_db_name # Replace with your DB name
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persist database data
+    restart: always
+    networks:
+      - app-network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+        # - DATABASE_URL=postgresql://postgres:password@db:5432/your_db_name # Replace with your DB details
+    command: [ "npm", "run", "start" ]
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./
+    #       target: /app
+    #       ignore:
+    #         - node_modules/
+    #     - action: rebuild
+    #       path: package.json
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - uploads:/app/public/uploads # Persist uploads folder
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      # - DATABASE_URL=postgresql://postgres:password@db:5432/your_db_name # Replace with your DB details
+      - NODE_OPTIONS=--max_old_space_size=4096 # Increase Node.js memory limit
+    restart: always
+    networks:
+      - app-network
+
+
+  cleanup-cron:
+    image: alpine/curl
+    command: >
+      sh -c "
+        echo '0 0 * * * curl -X POST http://web:3000/api/admin/products/upload/cleanup' > /etc/crontabs/root && \
+        crond -f -l 2
+      "
+    depends_on:
+      - web
+    networks:
+      - app-network
+
+volumes:
+  uploads: # Named volume for uploads
+  db_data:
+    # Named volume for database data
+
+networks:
+  app-network:
+    driver: bridge
