@@ -25,6 +25,7 @@ export interface CustomerDetails extends Customer {
   addresses: CustomerAddress[];
   orders: Array<{
     id: string;
+    orderNumber?: string;
     status: OrderStatus;
     createdAt: string;
     total: number;
