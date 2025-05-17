@@ -10,6 +10,7 @@ interface GetOrdersParams {
 interface OrdersResponse {
   data: Array<{
     id: string;
+    orderNumber?: string;
     status: OrderStatus;
     createdAt: string;
     recipientName: string;
@@ -41,6 +42,7 @@ interface OrdersResponse {
 interface CustomerOrdersResponse {
   orders: Array<{
     id: string;
+    orderNumber?: string;
     status: OrderStatus;
     recipientName: string;
     phone: string;

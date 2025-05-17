@@ -32,6 +32,7 @@ type OrderWithItems = {
             negotiablePrice: boolean;
         };
     }[];
+    orderNumber?: string;
 };
 
 export default function CustomerOrdersList({ orders: initialOrders }: { orders?: OrderWithItems[] } = {}) {
@@ -297,7 +298,7 @@ export default function CustomerOrdersList({ orders: initialOrders }: { orders?:
                                             <Card className="transition-all duration-200 hover:shadow-md hover:scale-[1.01]">
                                                 <CardHeader className="pb-3">
                                                     <CardTitle className="flex items-center justify-between text-base">
-                                                        <span>Order #{order.id}</span>
+                                                        <span>Order #{order.orderNumber || order.id}</span>
                                                         <span className="text-sm font-normal text-gray-500">
                                                             {new Date(order.createdAt).toLocaleDateString()}
                                                         </span>

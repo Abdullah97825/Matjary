@@ -70,6 +70,7 @@ interface Order {
   adminDiscountReason: string | null
   promoCodeId: string | null
   promoDiscount: number | null
+  orderNumber?: string
   promoCode?: {
     id: string
     code: string
@@ -461,23 +462,26 @@ export default function AdminOrderDetailPage() {
     <div className="container mx-auto px-4 py-6">
       <div className="flex flex-col space-y-6">
         {/* Header Section */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push('/admin/orders')}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Orders
-            </Button>
-            <h1 className="text-2xl font-bold">Order #{order.id.substring(0, 8)}</h1>
+        <div className="flex flex-col space-y-4">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-fit"
+            onClick={() => router.push('/admin/orders')}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Orders
+          </Button>
+
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold">Order #{order.orderNumber || order.id}</h1>
             <Badge variant={ORDER_STATUS_COLORS[order.status]} className="px-3 py-1">
               {ORDER_STATUS_LABELS[order.status]}
             </Badge>
           </div>
+
           <div className="text-sm text-gray-500">
-            {new Date(order.createdAt).toLocaleString()}
+            Date: {new Date(order.createdAt).toLocaleString()}
           </div>
         </div>
 

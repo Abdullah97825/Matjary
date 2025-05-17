@@ -147,7 +147,7 @@ export default function CustomerDetailsPage() {
                   >
                     <div className="flex items-center justify-between border-b p-4 last:border-0">
                       <div>
-                        <div className="font-medium">Order #{order.id}</div>
+                        <div className="font-medium">Order #{order.orderNumber || order.id}</div>
                         <div className="text-sm text-muted-foreground">
                           {new Date(order.createdAt).toLocaleDateString()}
                         </div>
