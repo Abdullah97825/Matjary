@@ -55,6 +55,7 @@ export async function GET(
         // Serialize the response
         const serializedOrder = {
             id: order.id,
+            orderNumber: order.orderNumber,
             status: order.status,
             recipientName: order.recipientName,
             phone: order.phone,

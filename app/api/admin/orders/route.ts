@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
       ...(search && {
         OR: [
           { id: { contains: search } },
+          { orderNumber: { contains: search } },
           { user: { name: { contains: search } } },
           { user: { email: { contains: search } } }
         ]
@@ -39,7 +40,15 @@ export async function GET(req: NextRequest) {
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          orderNumber: true,
+          status: true,
+          createdAt: true,
+          recipientName: true,
+          shippingAddress: true,
+          phone: true,
+          savings: true,
           items: {
             include: {
               product: true
@@ -52,7 +61,8 @@ export async function GET(req: NextRequest) {
               email: true,
               phone: true
             }
-          }
+          },
+          adminDiscount: true
         },
         orderBy: { createdAt: 'desc' },
         skip,
