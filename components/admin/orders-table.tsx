@@ -13,6 +13,7 @@ import { formatPrice } from "@/utils/format"
 
 interface Order {
   id: string
+  orderNumber?: string
   status: OrderStatus
   createdAt: string
   recipientName: string
@@ -55,8 +56,8 @@ export function AdminOrdersTable({
   const columns: ColumnDef<Order>[] = [
     {
       accessorKey: "id",
-      header: "Order ID",
-      cell: ({ row }) => `#${row.original.id}`
+      header: "Order Number",
+      cell: ({ row }) => `${row.original.orderNumber || row.original.id}`
     },
     {
       accessorKey: "user",

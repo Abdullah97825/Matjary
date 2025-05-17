@@ -172,6 +172,8 @@ model CartItem {
 
 model Order {
   id                  String               @id @default(cuid())
+  orderSequenceNumber Int                  @unique @default(autoincrement())
+  orderNumber         String?              @unique
   status              OrderStatus          @default(PENDING)
   user                User                 @relation(fields: [userId], references: [id])
   userId              String

@@ -47,6 +47,24 @@ export async function main() {
     } else {
       console.log('ℹ️ Show landing page setting already exists');
     }
+
+    // Check if Order Prefix setting exists
+    const orderPrefixSetting = await prisma.settings.findFirst({
+      where: { slug: 'order_prefix' }
+    });
+
+    if (!orderPrefixSetting) {
+      await prisma.settings.create({
+        data: {
+          name: 'Order Prefix',
+          slug: 'order_prefix',
+          value: 'M'
+        }
+      });
+      console.log('✅ Order prefix setting created successfully');
+    } else {
+      console.log('ℹ️ Order prefix setting already exists');
+    }
   } catch (error) {
     console.error('❌ Error during initial seeding:', error);
     throw error;

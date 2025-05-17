@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Package, 
-  ShoppingCart, 
-  Users, 
+import {
+  Package,
+  ShoppingCart,
+  Users,
   Tag,
   Clock,
   RefreshCcw
@@ -25,6 +25,7 @@ interface DashboardData {
   totalCustomers: number;
   recentOrders: Array<{
     id: string;
+    orderNumber?: string;
     status: OrderStatus;
     items: Array<{
       id: string;
@@ -107,8 +108,8 @@ export default function AdminDashboardPage() {
             Welcome to your admin dashboard
           </p>
         </div>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           onClick={fetchDashboardData}
           disabled={isRefreshing}
@@ -171,7 +172,7 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center space-x-4">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium">Order #{order.id}</p>
+                    <p className="text-sm font-medium">Order #{order.orderNumber || order.id}</p>
                     <p className="text-xs text-muted-foreground">
                       {order.items.length} items - Total: {formatPrice(order.items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0))}
                     </p>

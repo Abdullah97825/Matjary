@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import Link from 'next/link';
+import { Input } from '@/components/ui/input';
 
 export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
@@ -17,13 +18,16 @@ export default function SettingsPage() {
     // Individual settings
     const [showLandingPage, setShowLandingPage] = useState(false);
     const [showLandingPageId, setShowLandingPageId] = useState<string | null>(null);
+    const [orderPrefix, setOrderPrefix] = useState('M');
+    const [orderPrefixId, setOrderPrefixId] = useState<string | null>(null);
 
     // Track if there are unsaved changes
     const [hasChanges, setHasChanges] = useState(false);
 
     // Initial settings values for comparison
     const [initialSettings, setInitialSettings] = useState({
-        showLandingPage: false
+        showLandingPage: false,
+        orderPrefix: 'M'
     });
 
     useEffect(() => {
@@ -41,12 +45,20 @@ export default function SettingsPage() {
                 const isEnabled = landingPageSetting.value === 'true';
                 setShowLandingPage(isEnabled);
                 setShowLandingPageId(landingPageSetting.id);
-
-                // Set initial state for change detection
-                setInitialSettings({
-                    showLandingPage: isEnabled
-                });
             }
+
+            // Find the order prefix setting
+            const orderPrefixSetting = settingsData.find(s => s.slug === 'order_prefix');
+            if (orderPrefixSetting) {
+                setOrderPrefix(orderPrefixSetting.value);
+                setOrderPrefixId(orderPrefixSetting.id);
+            }
+
+            // Set initial state for change detection
+            setInitialSettings({
+                showLandingPage: landingPageSetting ? landingPageSetting.value === 'true' : false,
+                orderPrefix: orderPrefixSetting ? orderPrefixSetting.value : 'M'
+            });
         } catch (error) {
             toast.error('Failed to load settings');
             console.error(error);
@@ -58,27 +70,49 @@ export default function SettingsPage() {
     // Handle checkbox change
     const handleShowLandingPageChange = (checked: boolean) => {
         setShowLandingPage(checked);
-        setHasChanges(checked !== initialSettings.showLandingPage);
+        checkForChanges({ showLandingPage: checked });
+    };
+
+    // Handle order prefix change
+    const handleOrderPrefixChange = (value: string) => {
+        setOrderPrefix(value);
+        checkForChanges({ orderPrefix: value });
+    };
+
+    // Check for changes in any setting
+    const checkForChanges = (changes: { showLandingPage?: boolean, orderPrefix?: string }) => {
+        const newShowLandingPage = changes.showLandingPage !== undefined ? changes.showLandingPage : showLandingPage;
+        const newOrderPrefix = changes.orderPrefix !== undefined ? changes.orderPrefix : orderPrefix;
+
+        setHasChanges(
+            newShowLandingPage !== initialSettings.showLandingPage ||
+            newOrderPrefix !== initialSettings.orderPrefix
+        );
     };
 
     // Handle save changes
     const saveChanges = async () => {
-        if (!showLandingPageId) {
-            toast.error('Setting ID not found');
-            return;
-        }
-
         try {
             setSaving(true);
 
             // Update show landing page setting
-            await settingsService.update(showLandingPageId, {
-                value: showLandingPage.toString()
-            });
+            if (showLandingPageId && showLandingPage !== initialSettings.showLandingPage) {
+                await settingsService.update(showLandingPageId, {
+                    value: showLandingPage.toString()
+                });
+            }
+
+            // Update order prefix setting
+            if (orderPrefixId && orderPrefix !== initialSettings.orderPrefix) {
+                await settingsService.update(orderPrefixId, {
+                    value: orderPrefix
+                });
+            }
 
             // Update initial values to match current values
             setInitialSettings({
-                showLandingPage
+                showLandingPage,
+                orderPrefix
             });
 
             setHasChanges(false);
@@ -139,6 +173,39 @@ export default function SettingsPage() {
                                     When enabled, visitors will see the landing page at the root URL (/) instead of going directly to the store
                                 </p>
                             </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Order Management</CardTitle>
+                    <CardDescription>
+                        Configure order numbering and other order-related settings
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="orderPrefix">Order number prefix</Label>
+                            <div className="flex gap-4 items-center">
+                                <div className="w-full max-w-xs">
+                                    <Input
+                                        id="orderPrefix"
+                                        value={orderPrefix}
+                                        onChange={(e) => handleOrderPrefixChange(e.target.value)}
+                                        placeholder="M"
+                                        maxLength={10}
+                                    />
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                    Preview: {orderPrefix}-123
+                                </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                Set the prefix for order numbers. This will be combined with an auto-incrementing number (e.g., {orderPrefix}-123)
+                            </p>
                         </div>
                     </div>
                 </CardContent>

@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
       where,
       select: {
         id: true,
+        orderNumber: true,
         status: true,
         recipientName: true,
         phone: true,
@@ -84,6 +85,7 @@ export async function GET(request: NextRequest) {
 
       return {
         id: order.id,
+        orderNumber: order.orderNumber || undefined,
         status: order.status,
         recipientName: order.recipientName,
         phone: order.phone,
@@ -269,25 +271,45 @@ export async function POST(request: NextRequest) {
       orderStatus
     });
 
-    // Create order using user's verified data
-    const order = await prisma.order.create({
-      data: {
-        userId: user.id,
-        status: orderStatus,
-        recipientName: user.name,
-        phone: user.phone,
-        shippingAddress: formattedAddress,
-        paymentMethod: paymentMethod,
-        savings: savings,
-        promoCodeId: promoCodeId,
-        items: {
-          create: cart.items.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            price: calculateDiscountedPrice(item.product)
-          }))
+    // Fetch the order prefix from Settings (default to 'M' if not set)
+    const prefixSetting = await prisma.settings.findUnique({
+      where: { slug: 'order_prefix' }
+    });
+    const orderPrefix = prefixSetting?.value || 'O';
+
+    // Create order using user's verified data and generate order number
+    const order = await prisma.$transaction(async (tx) => {
+      // Create the order (orderSequenceNumber will be auto-generated)
+      const createdOrder = await tx.order.create({
+        data: {
+          userId: user.id,
+          status: orderStatus,
+          recipientName: user.name,
+          phone: user.phone,
+          shippingAddress: formattedAddress,
+          paymentMethod: paymentMethod,
+          savings: savings,
+          promoCodeId: promoCodeId,
+          items: {
+            create: cart.items.map(item => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: calculateDiscountedPrice(item.product)
+            }))
+          }
         }
-      }
+      });
+
+      // Generate the orderNumber using the prefix and orderSequenceNumber
+      const orderNumber = `${orderPrefix}-${createdOrder.orderSequenceNumber}`;
+
+      // Update the order with the generated orderNumber
+      const updatedOrder = await tx.order.update({
+        where: { id: createdOrder.id },
+        data: { orderNumber }
+      });
+
+      return updatedOrder;
     });
 
     // Clear the cart

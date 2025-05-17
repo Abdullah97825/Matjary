@@ -116,7 +116,8 @@ export default async function OrderPage({ params }: OrderPageProps) {
               {ORDER_STATUS_LABELS[order.status as OrderStatus]}
             </Badge>
           </div>
-          <p className="text-sm text-gray-500">Order #{order.id} - {new Date(order.createdAt).toLocaleDateString()}</p>
+          <p className="text-sm text-gray-500 mb-1">Order #{order.orderNumber || order.id}</p>
+          <p className="text-sm text-gray-500">Date: {new Date(order.createdAt).toLocaleDateString()}</p>
         </div>
         <Button asChild variant="outline">
           <Link href="/store">Continue Shopping</Link>
