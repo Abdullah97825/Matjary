@@ -11,11 +11,7 @@ interface RelatedProductsSectionProps {
 }
 
 export function RelatedProductsSection(props: RelatedProductsSectionProps) {
-  return (
-    <div className="mt-16 min-h-[520px]">
-      <RelatedProductsLoader {...props} />
-    </div>
-  );
+  return <RelatedProductsLoader {...props} />;
 }
 
 async function RelatedProductsLoader({ productId, categoryId, brandId, tags }: RelatedProductsSectionProps) {
