@@ -23,6 +23,7 @@ export async function main() {
           password: hashedPassword,
           role: Role.ADMIN,
           phone: process.env.ADMIN_PHONE || "+1234567890",
+          isActive: true,
         }
       });
       console.log('✅ Admin user created successfully');
