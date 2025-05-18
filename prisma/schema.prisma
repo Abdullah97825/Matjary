@@ -19,6 +19,7 @@ model User {
   password            String
   name                String
   role                Role                  @default(CUSTOMER)
+  isActive            Boolean               @default(false)
   phone               String
   addresses           Address[]
   sessions            Session[]
