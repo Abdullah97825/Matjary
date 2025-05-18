@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
     const page = Number(searchParams.get('page')) || 1;
     const per_page = Number(searchParams.get('per_page')) || 10;
     const search = searchParams.get('search');
+    const activeParam = searchParams.get('active');
+    const activeFilter = activeParam !== null ? activeParam === 'true' : null;
     const skip = (page - 1) * per_page;
 
     const where: Prisma.UserWhereInput = {
@@ -32,6 +34,9 @@ export async function GET(req: NextRequest) {
           { email: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
           { phone: { contains: search, mode: 'insensitive' as Prisma.QueryMode } }
         ]
+      }),
+      ...(activeFilter !== null && {
+        isActive: activeFilter
       })
     };
 
@@ -44,6 +49,7 @@ export async function GET(req: NextRequest) {
           email: true,
           phone: true,
           createdAt: true,
+          isActive: true,
           _count: {
             select: { orders: true }
           },
@@ -71,6 +77,7 @@ export async function GET(req: NextRequest) {
       email: customer.email,
       phone: customer.phone,
       createdAt: customer.createdAt,
+      isActive: customer.isActive,
       ordersCount: customer._count.orders,
       totalSpent: customer.orders.reduce((total, order) =>
         total + order.items.reduce((orderTotal, item) =>

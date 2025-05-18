@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authHandler } from "@/lib/auth-handler"
 import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
 interface RouteParams {
   params: Promise<{
@@ -53,6 +54,7 @@ export async function GET(
       email: customer.email,
       phone: customer.phone,
       createdAt: customer.createdAt,
+      isActive: customer.isActive,
       ordersCount: customer.orders.length,
       totalSpent: customer.orders.reduce((total, order) => {
         return total + order.items.reduce((orderTotal, item) => {
@@ -84,5 +86,63 @@ export async function GET(
       { error: "Failed to fetch customer" },
       { status: 500 }
     )
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: RouteParams
+) {
+  try {
+    const userOrResponse = await authHandler(req);
+    if (userOrResponse instanceof NextResponse) {
+      return userOrResponse;
+    }
+
+    const user = userOrResponse;
+    if (user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await params;
+    const body = await req.json();
+
+    // Validate the request body
+    const schema = z.object({
+      isActive: z.boolean()
+    });
+
+    const { isActive } = schema.parse(body);
+
+    // Update the user status
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { isActive },
+      select: {
+        id: true,
+        isActive: true
+      }
+    });
+
+    return NextResponse.json({
+      id: updatedUser.id,
+      isActive: updatedUser.isActive,
+      message: updatedUser.isActive ? "User account activated" : "User account deactivated"
+    });
+  } catch (error) {
+    console.error('[CUSTOMER_PATCH]', error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: error.errors[0].message },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Failed to update customer status" },
+      { status: 500 }
+    );
   }
 } 
