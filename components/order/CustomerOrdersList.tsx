@@ -259,98 +259,103 @@ export default function CustomerOrdersList({ orders: initialOrders }: { orders?:
 
                 <TabsContent value={activeTab} className="space-y-4">
                     {displayedOrders.length === 0 && !isLoading ? (
-                        <Card>
-                            <CardContent className="pt-6">
-                                <div className="text-center">
-                                    <p className="text-sm text-gray-500">No {activeTab} orders found</p>
-                                    {activeTab !== 'all' && (
-                                        <button
-                                            onClick={() => handleTabChange('all')}
-                                            className="text-sm text-blue-600 hover:underline"
-                                        >
-                                            View all orders
-                                        </button>
-                                    )}
-                                    <Link href="/" className="block mt-2 text-sm text-blue-600 hover:underline">
-                                        Start shopping
-                                    </Link>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ) : (
-                        <>
-                            {displayedOrders.map((order, index) => {
-                                const isLastOrder = index === displayedOrders.length - 1;
-
-                                // For orders that don't have pre-calculated totals
-                                const total = order.total;
-                                const isAdminPending = order.status === 'ADMIN_PENDING';
-                                const hasPendingHiddenPriceItems = order.hasHiddenPriceItems && order.status === 'PENDING';
-                                const hasNegotiableItems = order.hasNegotiableItems;
-                                const itemsCount = order.totalItems || order.items?.length || 0;
-
-                                return (
-                                    <div
-                                        key={getOrderKey(order, index)}
-                                        ref={isLastOrder ? lastOrderElementRef : null}
-                                    >
-                                        <Link href={`/orders/${order.id}`}>
-                                            <Card className="transition-all duration-200 hover:shadow-md hover:scale-[1.01]">
-                                                <CardHeader className="pb-3">
-                                                    <CardTitle className="flex items-center justify-between text-base">
-                                                        <span>Order #{order.orderNumber || order.id}</span>
-                                                        <span className="text-sm font-normal text-gray-500">
-                                                            {new Date(order.createdAt).toLocaleDateString()}
-                                                        </span>
-                                                    </CardTitle>
-                                                </CardHeader>
-                                                <CardContent>
-                                                    <div className="flex justify-between text-sm">
-                                                        <div>
-                                                            <p className="text-gray-500">
-                                                                {itemsCount} {itemsCount === 1 ? 'item' : 'items'}
-                                                            </p>
-                                                            <div className="flex items-center gap-2 mt-1">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Badge variant={ORDER_STATUS_COLORS[order.status as OrderStatus]}>
-                                                                        {ORDER_STATUS_LABELS[order.status as OrderStatus]}
-                                                                    </Badge>
-                                                                </div>
-                                                                <div className="flex gap-1">
-                                                                    {hasPendingHiddenPriceItems && (
-                                                                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                                                                            Hidden prices
-                                                                        </span>
-                                                                    )}
-                                                                    {hasNegotiableItems && (
-                                                                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                                                                            Negotiable
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="text-right">
-                                                            {isAdminPending ? (
-                                                                <p className="text-xs text-gray-500 italic">Quote pending</p>
-                                                            ) : (
-                                                                <>
-                                                                    {total !== undefined && (
-                                                                        <p className="font-medium text-gray-900">{formatPrice(total)}</p>
-                                                                    )}
-                                                                    {hasPendingHiddenPriceItems && (
-                                                                        <p className="text-xs text-gray-500">*Excludes items with hidden prices</p>
-                                                                    )}
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
+                        <div className="mx-auto max-w-3xl">
+                            <Card>
+                                <CardContent className="pt-6">
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-500">No {activeTab} orders found</p>
+                                        {activeTab !== 'all' && (
+                                            <button
+                                                onClick={() => handleTabChange('all')}
+                                                className="text-sm text-blue-600 hover:underline"
+                                            >
+                                                View all orders
+                                            </button>
+                                        )}
+                                        <Link href="/" className="block mt-2 text-sm text-blue-600 hover:underline">
+                                            Start shopping
                                         </Link>
                                     </div>
-                                );
-                            })}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="mx-auto max-w-3xl">
+                                {displayedOrders.map((order, index) => {
+                                    const isLastOrder = index === displayedOrders.length - 1;
+
+                                    // For orders that don't have pre-calculated totals
+                                    const total = order.total;
+                                    const isAdminPending = order.status === 'ADMIN_PENDING';
+                                    const hasPendingHiddenPriceItems = order.hasHiddenPriceItems && order.status === 'PENDING';
+                                    const hasNegotiableItems = order.hasNegotiableItems;
+                                    const itemsCount = order.totalItems || order.items?.length || 0;
+
+                                    return (
+                                        <div
+                                            key={getOrderKey(order, index)}
+                                            ref={isLastOrder ? lastOrderElementRef : null}
+                                            className="mb-4"
+                                        >
+                                            <Link href={`/orders/${order.id}`}>
+                                                <Card className="transition-all duration-200 hover:shadow-md hover:scale-[1.01]">
+                                                    <CardHeader className="pb-3">
+                                                        <CardTitle className="flex items-center justify-between text-base">
+                                                            <span>Order #{order.orderNumber || order.id}</span>
+                                                            <span className="text-sm font-normal text-gray-500">
+                                                                {new Date(order.createdAt).toLocaleDateString()}
+                                                            </span>
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        <div className="flex justify-between text-sm">
+                                                            <div>
+                                                                <p className="text-gray-500">
+                                                                    {itemsCount} {itemsCount === 1 ? 'item' : 'items'}
+                                                                </p>
+                                                                <div className="flex items-center gap-2 mt-1">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Badge variant={ORDER_STATUS_COLORS[order.status as OrderStatus]}>
+                                                                            {ORDER_STATUS_LABELS[order.status as OrderStatus]}
+                                                                        </Badge>
+                                                                    </div>
+                                                                    <div className="flex gap-1">
+                                                                        {hasPendingHiddenPriceItems && (
+                                                                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                                                                Hidden prices
+                                                                            </span>
+                                                                        )}
+                                                                        {hasNegotiableItems && (
+                                                                            <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                                                                Negotiable
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                {isAdminPending ? (
+                                                                    <p className="text-xs text-gray-500 italic">Quote pending</p>
+                                                                ) : (
+                                                                    <>
+                                                                        {total !== undefined && (
+                                                                            <p className="font-medium text-gray-900">{formatPrice(total)}</p>
+                                                                        )}
+                                                                        {hasPendingHiddenPriceItems && (
+                                                                            <p className="text-xs text-gray-500">*Excludes items with hidden prices</p>
+                                                                        )}
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </Link>
+                                        </div>
+                                    );
+                                })}
+                            </div>
 
                             {isLoading && (
                                 <div className="flex justify-center py-4">
@@ -359,19 +364,21 @@ export default function CustomerOrdersList({ orders: initialOrders }: { orders?:
                             )}
 
                             {isError && (
-                                <Card className="border-red-200 bg-red-50">
-                                    <CardContent className="pt-6">
-                                        <div className="text-center text-red-600">
-                                            <p>Failed to load orders. Please try again.</p>
-                                            <button
-                                                onClick={() => fetchOrders(page, false)}
-                                                className="mt-2 text-sm font-medium underline"
-                                            >
-                                                Retry
-                                            </button>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                <div className="mx-auto max-w-3xl">
+                                    <Card className="border-red-200 bg-red-50">
+                                        <CardContent className="pt-6">
+                                            <div className="text-center text-red-600">
+                                                <p>Failed to load orders. Please try again.</p>
+                                                <button
+                                                    onClick={() => fetchOrders(page, false)}
+                                                    className="mt-2 text-sm font-medium underline"
+                                                >
+                                                    Retry
+                                                </button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             )}
 
                             {/* Hidden dummy element for infinite scroll when there are few orders */}
