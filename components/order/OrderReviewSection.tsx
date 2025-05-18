@@ -9,6 +9,7 @@ import { OrderReviewForm } from './OrderReviewForm';
 import { OrderReviewDisplay } from './OrderReviewDisplay';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { toast } from 'sonner';
 
 interface OrderReviewSectionProps {
     orderId: string;
@@ -25,9 +26,13 @@ export function OrderReviewSection({ orderId, isCompleted, isAdmin = false }: Or
         try {
             setIsLoading(true);
             const data = await orderReviewService.getOrderReview(orderId);
+            // If data is null, it means the review doesn't exist
             setReview(data);
         } catch (error) {
-            console.error('Failed to fetch review:', error);
+            // This will only run for server errors, network issues, etc.
+            console.error('Failed to fetch review: ', error instanceof Error ? error.message : "");
+            setReview(null);
+            toast.error(error instanceof Error ? error.message : 'Failed to load review');
         } finally {
             setIsLoading(false);
         }

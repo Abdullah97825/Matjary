@@ -44,6 +44,14 @@ describe('OrderReview API', () => {
         image: null
     };
 
+    const mockAdminUser = {
+        id: 'admin1',
+        name: 'Admin User',
+        email: 'admin@example.com',
+        role: 'ADMIN',
+        image: null
+    };
+
     const mockOrder = {
         id: 'order1',
         userId: 'user1',
@@ -302,6 +310,25 @@ describe('OrderReview API', () => {
             expect(data).toEqual(mockOrderReview);
         });
 
+        it('should allow admin to get any order review regardless of ownership', async () => {
+            // Mock successful admin authentication
+            (authHandler as jest.Mock).mockResolvedValue(mockAdminUser);
+
+            // Mock existing review
+            (prisma.orderReview.findUnique as jest.Mock).mockResolvedValue(mockOrderReview);
+
+            const request = new NextRequest('http://localhost/api/orders/order1/review');
+
+            const response = await getOrderReviewHandler(request, createMockContext('order1'));
+            expect(response.status).toBe(200);
+
+            const data = await response.json();
+            expect(data).toEqual(mockOrderReview);
+
+            // Admin should bypass the order ownership check
+            expect(prisma.order.findFirst).not.toHaveBeenCalled();
+        });
+
         it('should return null if no review exists', async () => {
             // Mock successful authentication
             (authHandler as jest.Mock).mockResolvedValue(mockUser);
@@ -321,7 +348,7 @@ describe('OrderReview API', () => {
             expect(data).toBeNull();
         });
 
-        it('should return 404 if order not found', async () => {
+        it('should return 404 if order not found for non-admin user', async () => {
             // Mock successful authentication
             (authHandler as jest.Mock).mockResolvedValue(mockUser);
 

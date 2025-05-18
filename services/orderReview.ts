@@ -3,7 +3,12 @@ import { OrderReviewWithUser, CreateOrderReviewInput } from '@/types/orderReview
 export const orderReviewService = {
     async getOrderReview(orderId: string): Promise<OrderReviewWithUser | null> {
         const response = await fetch(`/api/orders/${orderId}/review`);
-        if (!response.ok) throw new Error('Failed to fetch order review');
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to fetch order review');
+        }
+
         return response.json();
     },
 

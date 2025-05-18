@@ -15,11 +15,11 @@ export async function GET(
         const user = userOrResponse;
         const orderId = (await params).id;
 
-        // Verify user owns this order
+        // Verify user owns this order (non-admin only)
         const order = await prisma.order.findFirst({
             where: {
                 id: orderId,
-                userId: user.id
+                ...(user.role !== 'ADMIN' && { userId: user.id })
             }
         });
 
