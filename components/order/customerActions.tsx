@@ -90,7 +90,7 @@ export function CustomerActions({ orderId, status, hasUnsavedChanges = false }: 
                         />
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         {validTransitions.includes('PENDING') && (
                             <Button
                                 onClick={() => handleStatusChange('PENDING')}

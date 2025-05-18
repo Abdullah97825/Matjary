@@ -108,20 +108,22 @@ export default async function OrderPage({ params }: OrderPageProps) {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-gray-900">Order Details</h1>
-            <Badge variant={ORDER_STATUS_COLORS[order.status as OrderStatus]}>
-              {ORDER_STATUS_LABELS[order.status as OrderStatus]}
-            </Badge>
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 mb-2">
+              <h1 className="text-2xl font-bold text-gray-900">Order Details</h1>
+              <Badge variant={ORDER_STATUS_COLORS[order.status as OrderStatus]} className="mt-2 sm:mt-0 w-fit">
+                {ORDER_STATUS_LABELS[order.status as OrderStatus]}
+              </Badge>
+            </div>
+            <p className="text-sm text-gray-500 mb-1">Order #{order.orderNumber || order.id}</p>
+            <p className="text-sm text-gray-500">Date: {new Date(order.createdAt).toLocaleDateString()}</p>
           </div>
-          <p className="text-sm text-gray-500 mb-1">Order #{order.orderNumber || order.id}</p>
-          <p className="text-sm text-gray-500">Date: {new Date(order.createdAt).toLocaleDateString()}</p>
+          <Button asChild variant="outline" className="mt-4 sm:mt-0">
+            <Link href="/store">Continue Shopping</Link>
+          </Button>
         </div>
-        <Button asChild variant="outline">
-          <Link href="/store">Continue Shopping</Link>
-        </Button>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">

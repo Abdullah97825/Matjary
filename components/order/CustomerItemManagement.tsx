@@ -270,7 +270,7 @@ export function CustomerItemManagement({ orderId, items, onItemsUpdated }: Custo
                             ))}
 
                             {/* Action buttons */}
-                            <div className="flex justify-end gap-2 mt-4">
+                            <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
                                 {hasChanges && (
                                     <>
                                         <Button

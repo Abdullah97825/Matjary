@@ -248,13 +248,13 @@ export default function CustomerOrdersList({ orders: initialOrders }: { orders?:
     return (
         <div className="space-y-6">
             <Tabs defaultValue="all" value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="mb-6 flex flex-wrap gap-2">
-                    <TabsTrigger value="all">All Orders</TabsTrigger>
-                    <TabsTrigger value="latest">Latest</TabsTrigger>
-                    <TabsTrigger value="active">Active</TabsTrigger>
-                    <TabsTrigger value="completed">Completed</TabsTrigger>
-                    <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
-                    <TabsTrigger value="rejected">Rejected</TabsTrigger>
+                <TabsList className="mb-6 flex w-full overflow-x-auto sm:flex-wrap gap-2 pb-1">
+                    <TabsTrigger value="all" className="flex-shrink-0">All Orders</TabsTrigger>
+                    <TabsTrigger value="latest" className="flex-shrink-0">Latest</TabsTrigger>
+                    <TabsTrigger value="active" className="flex-shrink-0">Active</TabsTrigger>
+                    <TabsTrigger value="completed" className="flex-shrink-0">Completed</TabsTrigger>
+                    <TabsTrigger value="cancelled" className="flex-shrink-0">Cancelled</TabsTrigger>
+                    <TabsTrigger value="rejected" className="flex-shrink-0">Rejected</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value={activeTab} className="space-y-4">

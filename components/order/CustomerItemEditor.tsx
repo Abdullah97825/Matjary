@@ -610,7 +610,7 @@ export function CustomerItemEditor({ orderId, initialItems }: CustomerItemEditor
                             />
                         </div>
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row gap-2">
                             <Button
                                 variant="outline"
                                 onClick={cancelChanges}
@@ -664,7 +664,7 @@ export function CustomerItemEditor({ orderId, initialItems }: CustomerItemEditor
                             />
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                             <Button
                                 onClick={() => saveChanges(false, true)}
                                 disabled={isSubmitting}
