@@ -17,6 +17,7 @@ export interface Customer {
   email: string;
   phone: string;
   createdAt: string;
+  isActive: boolean;
   ordersCount: number;
   totalSpent: number;
 }
