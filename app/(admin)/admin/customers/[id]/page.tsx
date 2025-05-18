@@ -13,12 +13,16 @@ import { Badge } from "@/components/ui/badge"
 import { ORDER_STATUS_COLORS, ORDER_STATUS_LABELS } from "@/types/order"
 import { OrderStatus } from "@prisma/client"
 import Link from "next/link"
+import { Switch } from "@/components/ui/switch"
+import { toast } from "sonner"
+
 
 export default function CustomerDetailsPage() {
   const router = useRouter()
   const { id } = useParams()
   const [customer, setCustomer] = useState<CustomerDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -34,6 +38,22 @@ export default function CustomerDetailsPage() {
 
     fetchCustomer()
   }, [id])
+
+  const handleStatusToggle = async (checked: boolean) => {
+    if (!customer) return;
+
+    try {
+      setIsUpdating(true);
+      const response = await customerService.updateStatus(customer.id, checked);
+      setCustomer(prev => prev ? { ...prev, isActive: checked } : null);
+      toast.success(response.message);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update account status: " + (error instanceof Error ? error.message : "Unknown error"));
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -79,6 +99,19 @@ export default function CustomerDetailsPage() {
             <div>
               <div className="text-sm text-muted-foreground">Member Since</div>
               <div>{new Date(customer.createdAt).toLocaleDateString()}</div>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t">
+              <div className="text-sm font-medium">Account Status</div>
+              <div className="flex items-center gap-2">
+                <div className="text-sm text-muted-foreground">
+                  {isUpdating ? "Updating..." : customer.isActive ? "Active" : "Inactive"}
+                </div>
+                <Switch
+                  checked={customer.isActive}
+                  onCheckedChange={handleStatusToggle}
+                  disabled={isUpdating}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

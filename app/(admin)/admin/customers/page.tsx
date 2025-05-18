@@ -9,12 +9,20 @@ import { Input } from '@/components/ui/input'
 import { AdminCustomersTable } from '@/components/admin/customers-table'
 import { PaginationState } from '@/types/pagination'
 import { Customer } from '@/types/customer'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isRefetching, setIsRefetching] = useState(false)
   const [search, setSearch] = useState('')
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -30,7 +38,8 @@ export default function CustomersPage() {
       const response = await customerService.getAll(
         pagination.pageIndex + 1,
         pagination.pageSize,
-        debouncedSearch
+        debouncedSearch,
+        activeFilter
       )
       setCustomers(response.data)
       setPagination(prev => ({
@@ -49,7 +58,7 @@ export default function CustomersPage() {
 
   useEffect(() => {
     fetchCustomers()
-  }, [debouncedSearch, pagination.pageIndex, pagination.pageSize])
+  }, [debouncedSearch, pagination.pageIndex, pagination.pageSize, activeFilter])
 
   if (isLoading) {
     return (
@@ -75,9 +84,23 @@ export default function CustomersPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
+
+        <Select
+          value={activeFilter || 'all'}
+          onValueChange={(value) => setActiveFilter(value === 'all' ? null : value)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Status: All" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Accounts</SelectItem>
+            <SelectItem value="true">Active Accounts</SelectItem>
+            <SelectItem value="false">Inactive Accounts</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <AdminCustomersTable 
+      <AdminCustomersTable
         customers={customers}
         isLoading={isRefetching}
         pagination={pagination}

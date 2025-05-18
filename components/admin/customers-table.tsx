@@ -8,6 +8,7 @@ import { PaginationState } from "@/types/pagination"
 import { formatPrice } from "@/utils/format"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 interface AdminCustomersTableProps {
   customers: Customer[]
@@ -25,7 +26,7 @@ export function AdminCustomersTable({
   onRefresh
 }: AdminCustomersTableProps) {
   const router = useRouter()
-  
+
   const columns: ColumnDef<Customer>[] = [
     {
       accessorKey: "name",
@@ -41,6 +42,15 @@ export function AdminCustomersTable({
     {
       accessorKey: "phone",
       header: "Phone",
+    },
+    {
+      accessorKey: "isActive",
+      header: "Status",
+      cell: ({ row }) => (
+        <Badge variant={row.original.isActive ? "green" : "destructive"} className="whitespace-nowrap">
+          {row.original.isActive ? "Active" : "Inactive"}
+        </Badge>
+      )
     },
     {
       accessorKey: "ordersCount",
@@ -84,8 +94,8 @@ export function AdminCustomersTable({
   return (
     <div>
       <div className="mb-4 flex justify-end">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
           onClick={onRefresh}
         >
@@ -98,7 +108,7 @@ export function AdminCustomersTable({
         pagination={pagination}
         onPaginationChange={onPaginationChange}
         isLoading={isLoading}
-        />
+      />
     </div>
   )
 } 
