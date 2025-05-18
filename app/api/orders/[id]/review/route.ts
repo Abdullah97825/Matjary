@@ -15,16 +15,19 @@ export async function GET(
         const user = userOrResponse;
         const orderId = (await params).id;
 
-        // Verify user owns this order (non-admin only)
-        const order = await prisma.order.findFirst({
-            where: {
-                id: orderId,
-                ...(user.role !== 'ADMIN' && { userId: user.id })
-            }
-        });
+        // For admin users, bypass order ownership check completely
+        if (user.role !== 'ADMIN') {
+            // Verify user owns this order (non-admin only)
+            const order = await prisma.order.findFirst({
+                where: {
+                    id: orderId,
+                    userId: user.id
+                }
+            });
 
-        if (!order) {
-            return new NextResponse('Order not found', { status: 404 });
+            if (!order) {
+                return new NextResponse('Order not found', { status: 404 });
+            }
         }
 
         // Get the review
