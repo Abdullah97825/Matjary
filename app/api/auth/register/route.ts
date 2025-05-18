@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
         email: validatedData.email,
         phone: validatedData.phone,
         password: hashedPassword,
+        isActive: false, // Set account as inactive by default
         addresses: {
           create: {
             country: validatedData.address.country,
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "User registered successfully" },
+      { message: "User registered successfully. Your account will be reviewed by an administrator." },
       { status: 201 }
     );
   } catch (err) {
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Safely log the error without stringifying it
     console.error("Registration error occurred");
     if (err instanceof Error) {

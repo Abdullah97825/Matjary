@@ -85,7 +85,16 @@ describe('Authentication API', () => {
       expect(response.status).toBe(201);
 
       const data = await response.json();
-      expect(data.message).toBe('User registered successfully');
+      expect(data.message).toBe('User registered successfully. Your account will be reviewed by an administrator.');
+
+      // Ensure isActive is set to false during registration
+      expect(prisma.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            isActive: false
+          })
+        })
+      );
     });
 
     it('should reject invalid registration data', async () => {
@@ -142,6 +151,8 @@ describe('Authentication API', () => {
         id: 1,
         email: 'test@example.com',
         password: hashedPassword,
+        isActive: true, // User is active
+        role: 'CUSTOMER'
       };
 
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
@@ -155,6 +166,66 @@ describe('Authentication API', () => {
         method: 'POST',
         body: JSON.stringify({
           email: 'test@example.com',
+          password: 'Password123',
+        }),
+      });
+
+      const response = await loginHandler(request);
+      expect(response.status).toBe(200);
+
+      const cookies = response.headers.get('set-cookie');
+      expect(cookies).toBeTruthy();
+    });
+
+    it('should reject inactive user accounts', async () => {
+      const hashedPassword = await hashPassword('Password123');
+      const mockUser = {
+        id: 1,
+        email: 'test@example.com',
+        password: hashedPassword,
+        isActive: false, // User is inactive
+        role: 'CUSTOMER'
+      };
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (verifyPassword as jest.Mock).mockResolvedValue(true);
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'test@example.com',
+          password: 'Password123',
+        }),
+      });
+
+      const response = await loginHandler(request);
+      expect(response.status).toBe(403);
+
+      const data = await response.json();
+      expect(data.error).toBe('Your account is not active. Please contact an administrator.');
+    });
+
+    it('should allow admin users to login regardless of isActive status', async () => {
+      const hashedPassword = await hashPassword('Password123');
+      const mockUser = {
+        id: 1,
+        email: 'admin@example.com',
+        password: hashedPassword,
+        isActive: false, // Inactive, but admin user
+        role: 'ADMIN'
+      };
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (verifyPassword as jest.Mock).mockResolvedValue(true);
+      (prisma.session.create as jest.Mock).mockResolvedValue({
+        id: 1,
+        token: 'test-token'
+      });
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'admin@example.com',
           password: 'Password123',
         }),
       });

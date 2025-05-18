@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, InfoIcon } from "lucide-react";
 import { registerSchema } from "@/schemas";
 import { userService } from "@/services/user";
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,7 @@ export function RegisterForm() {
 
     try {
       await userService.register(data);
-      toast.success("Account created successfully");
+      toast.success("Account created successfully. Please wait for admin approval before you can log in.");
       router.push("/login");
     } catch (err) {
       const error = err as { message?: string };
@@ -73,6 +73,13 @@ export function RegisterForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <Alert className="mb-6 border-blue-200 bg-blue-50 text-blue-700">
+          <InfoIcon className="h-4 w-4" />
+          <AlertDescription>
+            After registration, your account will need to be activated by an administrator before you can log in.
+          </AlertDescription>
+        </Alert>
+
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertDescription>{error}</AlertDescription>

@@ -34,6 +34,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if the account is active (admin accounts are always active)
+    if (!user.isActive && user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: "Your account is not active. Please contact an administrator." },
+        { status: 403 }
+      );
+    }
+
     // Create session
     const token = crypto.randomBytes(32).toString("hex");
     const expires = new Date();

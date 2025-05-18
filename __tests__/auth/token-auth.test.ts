@@ -40,6 +40,17 @@ describe('Token-based Authentication', () => {
         email: 'test@example.com',
         name: 'Test User',
         role: 'CUSTOMER',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    };
+
+    const mockInactiveUser = {
+        id: '2',
+        email: 'inactive@example.com',
+        name: 'Inactive User',
+        role: 'CUSTOMER',
+        isActive: false,
         createdAt: new Date(),
         updatedAt: new Date(),
     };
@@ -69,6 +80,16 @@ describe('Token-based Authentication', () => {
         expiresAt: new Date(Date.now() + 86400000), // 1 day from now
         lastUsedAt: new Date(),
         user: mockUser,
+    };
+
+    const mockInactiveToken = {
+        id: '2',
+        token: 'inactive-user-token',
+        name: 'Inactive Token',
+        userId: mockInactiveUser.id,
+        expiresAt: new Date(Date.now() + 86400000),
+        lastUsedAt: new Date(),
+        user: mockInactiveUser,
     };
 
     beforeEach(() => {
@@ -168,6 +189,28 @@ describe('Token-based Authentication', () => {
 
             const response = await profileHandler(request);
             expect(response.status).toBe(401);
+        });
+
+        it('should reject access to API routes for inactive user accounts', async () => {
+            // Mock authHandler to check isActive status
+            (authHandler as jest.Mock).mockImplementation(async () => {
+                return NextResponse.json(
+                    { error: 'Account is not active. Please wait for admin approval.' },
+                    { status: 403 }
+                );
+            });
+
+            const request = new NextRequest('http://localhost/api/user/profile', {
+                headers: {
+                    'Authorization': `Bearer ${mockInactiveToken.token}`,
+                },
+            });
+
+            const response = await profileHandler(request);
+            expect(response.status).toBe(403);
+
+            const data = await response.json();
+            expect(data.error).toBe('Account is not active. Please wait for admin approval.');
         });
     });
 }); 
