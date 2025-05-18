@@ -248,14 +248,18 @@ export default function CustomerOrdersList({ orders: initialOrders }: { orders?:
     return (
         <div className="space-y-6">
             <Tabs defaultValue="all" value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="mb-6 flex w-full overflow-x-auto sm:flex-wrap gap-2 pb-1">
-                    <TabsTrigger value="all" className="flex-shrink-0">All Orders</TabsTrigger>
-                    <TabsTrigger value="latest" className="flex-shrink-0">Latest</TabsTrigger>
-                    <TabsTrigger value="active" className="flex-shrink-0">Active</TabsTrigger>
-                    <TabsTrigger value="completed" className="flex-shrink-0">Completed</TabsTrigger>
-                    <TabsTrigger value="cancelled" className="flex-shrink-0">Cancelled</TabsTrigger>
-                    <TabsTrigger value="rejected" className="flex-shrink-0">Rejected</TabsTrigger>
-                </TabsList>
+                <div className="flex justify-center overflow-hidden">
+                    <div className="overflow-x-auto pb-2 max-w-full">
+                        <TabsList className="mb-4 inline-flex min-w-max gap-2">
+                            <TabsTrigger value="all" className="flex-shrink-0">All Orders</TabsTrigger>
+                            <TabsTrigger value="latest" className="flex-shrink-0">Latest</TabsTrigger>
+                            <TabsTrigger value="active" className="flex-shrink-0">Active</TabsTrigger>
+                            <TabsTrigger value="completed" className="flex-shrink-0">Completed</TabsTrigger>
+                            <TabsTrigger value="cancelled" className="flex-shrink-0">Cancelled</TabsTrigger>
+                            <TabsTrigger value="rejected" className="flex-shrink-0">Rejected</TabsTrigger>
+                        </TabsList>
+                    </div>
+                </div>
 
                 <TabsContent value={activeTab} className="space-y-4">
                     {displayedOrders.length === 0 && !isLoading ? (
