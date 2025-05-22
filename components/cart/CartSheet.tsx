@@ -120,17 +120,19 @@ export function CartSheet() {
           ) : (
             <CartProvider key={items.length} initialItems={items} initialSubtotal={subtotal}>
               <div className="flex h-full flex-col">
-                <div className="flex-1 overflow-y-auto py-4">
-                  <CartItems
-                    isSheet
-                    onContinueShopping={() => {
-                      setIsOpen(false);
-                      router.push('/store');
-                    }}
-                  />
+                <div className="flex-1 py-4">
+                  <div className="max-h-[50vh] overflow-y-auto scrollbar scrollbar-w-2 scrollbar-thumb-primary scrollbar-track-gray-200 pr-1">
+                    <CartItems
+                      isSheet
+                      onContinueShopping={() => {
+                        setIsOpen(false);
+                        router.push('/store');
+                      }}
+                    />
+                  </div>
                 </div>
 
-                <div className="border-t pt-4">
+                <div className="border-t pt-4 mt-auto">
                   {!hasSpecialPriceItems ? (
                     <div className="mb-4 flex justify-between font-medium">
                       <span>Subtotal</span>

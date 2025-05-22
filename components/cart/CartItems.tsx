@@ -14,6 +14,7 @@ import { useCartError } from '@/hooks/useCartError';
 import { formatPrice } from '@/utils/format';
 import { calculateSubtotal, dispatchCartUpdate, convertPrice } from '@/utils/cart';
 import { calculateDiscountedPrice, getDiscountLabel } from '@/utils/price';
+import { RemoveItemDialog } from '@/components/cart/RemoveItemDialog';
 
 interface CartItemsProps {
   isSheet?: boolean;
@@ -176,15 +177,11 @@ export function CartItems({ isSheet = false, onContinueShopping }: CartItemsProp
                   onChange={(e) => handleQuantityChange(item, e.target.value)}
                   className="w-20"
                 />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => removeItem(item.id)}
-                  disabled={isItemLoading(item.id)}
-                  className="hover:bg-red-600"
-                >
-                  <Trash2Icon className="h-4 w-4" />
-                </Button>
+                <RemoveItemDialog
+                  item={item}
+                  onRemove={removeItem}
+                  isLoading={isItemLoading(item.id)}
+                />
               </div>
             </div>
           </div>
@@ -254,15 +251,11 @@ export function CartItems({ isSheet = false, onContinueShopping }: CartItemsProp
                     onChange={(e) => handleQuantityChange(item, e.target.value)}
                     className="w-20"
                   />
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => removeItem(item.id)}
-                    disabled={isItemLoading(item.id)}
-                    className="hover:bg-red-600"
-                  >
-                    <Trash2Icon className="h-4 w-4" />
-                  </Button>
+                  <RemoveItemDialog
+                    item={item}
+                    onRemove={removeItem}
+                    isLoading={isItemLoading(item.id)}
+                  />
                 </div>
               </div>
             </div>
